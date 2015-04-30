@@ -7,6 +7,14 @@
         <input type="text" id="city"></input>
         <input type="submit" value="Submit"></input>
     </form>
+
+
+  {% if current_user.is_authenticated() %}
+    <a href="{{ url_for('logout') }}">log out {{ current_user.username }}</a>
+  {% else %}
+    <a href="{{ url_for('login', username='Jan Hybs') }}">log in</a>
+  {% endif %}
+
     <div id="cities-list"></div>
 
     <script type="text/javascript" 
