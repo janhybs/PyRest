@@ -1,13 +1,14 @@
-from flask import Flask, render_template, escape, redirect
 
+import transaction, ZODB
+from server.auth import Auth, authenticated_only
+from database.conference import ConferenceManagementApplication, Conference
+
+from flask import Flask, render_template, escape, redirect
 from flask_socketio import SocketIO, emit
 from flask_login import current_user
-import ZODB
-import ZODB.FileStorage
-import transaction
-from database.conference import Conference, ConferenceManagementApplication
 
-from server.auth import Auth, authenticated_only
+
+
 
 
 class G (object):
