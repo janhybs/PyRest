@@ -1,108 +1,119 @@
-import time, random
+from flask import Flask, render_template, escape, redirect
 
-from flask import Flask, render_template, request, escape, redirect, url_for
-from flask_socketio import SocketIO, send, emit
-from flask_login import LoginManager, UserMixin, login_required, login_user, flash, current_user, logout_user
-from auth import Auth, authenticated_only
+from flask_socketio import SocketIO, emit
+from flask_login import current_user
+import ZODB
+import ZODB.FileStorage
+import transaction
+from database.conference import Conference, ConferenceManagementApplication
 
-app = Flask (__name__)
-app.config['SECRET_KEY'] = 'secretcacas!'
-
-socket = SocketIO (app)
-auth = Auth (app)
+from server.auth import Auth, authenticated_only
 
 
-@app.route ("/login/<username>")
+class G (object):
+    # server specific
+    server = None
+    socket = None
+    auth = None
+
+    # database specific
+    db_locked = False
+    database = None
+    db_root = None
+    db_storage = None
+    db_conn = None
+
+
+G.server = Flask (__name__)
+G.server.config['SECRET_KEY'] = 'secretcacas!'
+G.socket = SocketIO (G.server)
+G.auth = Auth (G.server)
+
+
+@G.server.route ("/login/<username>")
 def login (username):
-    user = auth.login (username)
+    user = G.auth.login (username)
     if user is None:
         return "wrong credentials"
 
-    auth.login_user (user)
+    G.auth.login_user (user)
 
     print 'login user ' + user.username
     print 'login id' + user.id
     return redirect ('/')
 
 
-@app.route ("/logout")
-def logout ():
-    auth.logout_user ()
-    return redirect ('/')
-
-
-@app.route ('/')
+@G.server.route ('/')
 def main ():
     return render_template ('main.html')
 
 
-@socket.on ('connect')
+@G.server.route ("/logout")
+def logout ():
+    G.auth.logout_user ()
+    return redirect ('/')
+
+
+@G.socket.on ('connect')
 def ws_conn ():
-    socket.emit ('msg', 'co co')
+    G.socket.emit ('msg', 'co co')
 
 
-@socket.on ('disconnect')
+@G.socket.on ('disconnect')
 def ws_disconn ():
-    socket.emit ('msg', 'disco')
+    G.socket.emit ('msg', 'disco')
 
 
-@socket.on ('city')
+@G.socket.on ('city')
 @authenticated_only
 def ws_city (message):
-    # print message['city']
-    emit ('city', { 'city': escape (current_user.username + ": " + message['city']) })
-    auth = current_user.is_authenticated ()
-    emit ('msg', str (auth))
+    # emit ('city', { 'city': escape (current_user.username + ": " + message['city']) })
+    city = message['city']
 
-    # i = 1
-    # while True:
-    # i+=1
-    # time.sleep (1)
-    # emit('city', {'city': r}, broadcast=False)
+    conference = G.db_root.conference.get (city)
+
+    if conference is None:
+        print 'creating new conference'
+        new_conference = Conference ()
+        new_conference.city = city
+        new_conference.users.append (current_user.username)
+        # commit changes
+        G.db_root.conference.insert (city, new_conference)
+        transaction.commit ()
+    else:
+        print 'updating conference'
+        conference.users.append (current_user.username)
+        # commit changes
+        transaction.commit ()
+
+    for c in G.db_root.conference.items ():
+        msg = c[1].get_info ()
+        emit ('city', { 'city': msg })
+
+
+def init_db ():
+    try:
+        G.db_storage = ZODB.FileStorage.FileStorage ('database.fs')
+        G.database = ZODB.DB (G.db_storage)
+        G.db_conn = G.database.open ()
+        G.db_root = G.db_conn.root
+
+        if not hasattr (G.db_root, 'conference'):
+            print 'no conference root, creating'
+            G.db_root.conference = ConferenceManagementApplication ()
+
+        transaction.commit ()
+
+    except:
+        pass
+
+
+def init_server ():
+    # G.server.debug = True
+    G.socket.run (G.server, host='0.0.0.0', port=5000)
 
 
 if __name__ == '__main__':
-    app.debug = True
-    socket.run (app, host='0.0.0.0', port=5000)
+    init_db ()
+    init_server ()
 
-    # @app.route('/', methods=['GET', 'POST'])
-    # def index():
-    # if request.method == 'POST':
-    # return "POST req"
-    # else:
-    #         return "GET req"
-    #
-    # @app.route('/hello')
-    # def hello():
-    #     return 'Hello World'
-    #
-    #
-    # @app.route('/user/<username>')
-    # def show_user_profile(username):
-    #     # return render_template('main.html', name=username, p=request.form['username']) 400 bad request
-    #     return render_template('main.html', name=username,)
-    #
-    # @app.route('/post/<int:post_id>')
-    # def show_post(post_id):
-    #     # show the post with the given id, the id is an integer
-    #     return 'Post %d' % post_id
-    #
-    #
-    #
-    # @app.route('/projects/')
-    # def projects():
-    #     return 'The project page'
-    #
-    # @app.route('/about')
-    # def about():
-    #     return 'The about page'
-    #
-    # @sockets.route('/test')
-    # def test_connect(ws):
-    #     while True:
-    #         message = ws.receive()
-    #         ws.send(message)
-    #
-    # if __name__ == '__main__':
-    #     app.run(debug=True)
-    #     # app.run(host='0.0.0.0')
