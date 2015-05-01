@@ -62,14 +62,3 @@ class User (UserMixin):
         self.id = session_id
 
 
-def authenticated_only (f):
-    @functools.wraps (f)
-    def wrapped (*args, **kwargs):
-        if not current_user.is_authenticated ():
-            print 'User not authenticated!'
-            request.namespace.disconnect ()
-        else:
-            return f (*args, **kwargs)
-
-    return wrapped
-

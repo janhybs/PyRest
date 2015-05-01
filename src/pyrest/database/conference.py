@@ -2,8 +2,9 @@
 # author:   Jan Hybs
 
 import persistent
-from database.BTreeEx import BTreeEx
 from persistent.list import PersistentList
+
+from pyrest.database.BTreeEx import BTreeEx
 
 
 class Conference (persistent.Persistent):
