@@ -7,3 +7,10 @@ install:
 # command to run tests
 script:
   - python src/runserver.py --noserver
+
+notifications:
+  email:
+    recipients:
+      - x3mSpeedy@gmail.com
+    on_success: change
+    on_failure: always
