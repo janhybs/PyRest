@@ -6,7 +6,8 @@ install:
   - pip install -r requirements.txt
 # command to run tests
 script:
-  - python src/runserver.py --noserver
+  - python src/runserver.py --noserver --debug --memorystorage
+  - python src/runserver.py --noserver --debug
 
 notifications:
   email:
