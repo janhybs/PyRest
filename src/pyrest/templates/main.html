@@ -1,53 +1,95 @@
 <html>
-<head><title>Django District</title></head>
+<head>
+    {% block head %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="PyRest demonstration">
+        <meta name="author" content="Jan Hybš">
+        <title>PyRest</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    {% endblock %}
+</head>
 <body>
-    <h1>In what cities other than DC have you gone to Python meetups?</h1>
+    {% block body %}
+	<div class="container">
+		<div class="jumbotron">
+
+            <!-- Flash messages -->
+            {% block flash %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="list-group">
+                        {% for category, message in messages %}
+                            <div class="list-group-item list-group-item-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endblock %}
+
+            <h1>
+                <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                </a>
+                PyRest example
+            </h1>
+
+            {% block header %}
+                {% block login_control %}
+                    {% if current_user.is_authenticated() %}
+                        <a href="{{ url_for('user.logout') }}">log out {{ current_user.user.username }}</a>
+                    {% else %}
+                        <a href="{{ url_for('user.login') }}">login</a>
+                        or
+                        <a href="{{ url_for('user.sign_up') }}">sign up</a>
+                    {% endif %}
+                {% endblock %}
+
+                {% block login_form %}
+                    <!-- login form -->
+                {% endblock %}
+
+                {% block sign_up_form %}
+                    <!-- sign up form -->
+                {% endblock %}
+
+            {% endblock %}
 
 
-  {% if current_user.is_authenticated() %}
-    <form method="post" action="#" id="cityform">
-        <label>City</label>
-        <input type="text" id="city"></input>
-        <input type="submit" value="Submit"></input>
-    </form>
-    <a href="{{ url_for('user.logout') }}">log out {{ current_user.username }}</a>
-  {% else %}
-    <a href="{{ url_for('user.login', username='Jan Hybs') }}">log in</a>
-  {% endif %}
+            <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    var url = "http://" + document.domain + ":" + location.port;
+                    var socket = io.connect(url + "/");
+                    $("#cityform").submit(function(event) {
+                        socket.emit('city', {'city': $('#city').val()});
+                        $('#city').val('');
+                        return false;
+                    });
+                    socket.on('city', function(msg) {
+                        $("#cities-list").prepend('<li>' + msg.city + '</li>');
+                        console.log ('city event')
+                        console.log (msg);
+                    });
+                    socket.on('connect', function() {
+                        console.log ('CONNECTED')
+                    });
+                    socket.on('disconnect', function() {
+                        console.log ('DISCONNECTED')
+                    });
+                    socket.on('debug', function(msg) {
+                        console.log ('debug: ')
+                        console.log (msg);
+                    });
+                    window.socket = socket;
 
-    <div id="cities-list"></div>
-
-    <script type="text/javascript" 
-                src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var url = "http://" + document.domain + ":" + location.port;
-            var socket = io.connect(url + "/");
-            $("#cityform").submit(function(event) {
-                socket.emit('city', {'city': $('#city').val()});
-                $('#city').val('');
-                return false;
-            });
-            socket.on('city', function(msg) {
-                $("#cities-list").prepend('<li>' + msg.city + '</li>');
-                console.log ('city event')
-                console.log (msg);
-            });
-            socket.on('connect', function() {
-                console.log ('CONNECTED')
-            });
-            socket.on('disconnect', function() {
-                console.log ('DISCONNECTED')
-            });
-            socket.on('debug', function(msg) {
-                console.log ('debug: ')
-                console.log (msg);
-            });
-            window.socket = socket;
-            
-        });
-    </script>
+                });
+            </script>
+        </div>
+    </div>
+    {% endblock %}
 </body>
 </html>

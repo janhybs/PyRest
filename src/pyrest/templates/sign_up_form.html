@@ -1,12 +1,13 @@
+{% from "_formhelpers.html" import render_field %}
 {% extends "main.html" %}
 {% block header %}
     {% block registration_form %}
-        <form method="POST" action="{{ url_for('user.login') }}">
+        <form method=post action="{{ url_for('user.sign_up') }}">
             {{ form.csrf_token }}
-            {{ form.username.label }} {{ form.username }}
-            {{ form.password.label }} {{ form.password }}
-            {{ form.password_confirm.label }} {{ form.password_confirm }}
-            <input type="submit" value="Sign up">
+            {{ render_field(form.username, class='form-control') }}
+            {{ render_field(form.password, class='form-control') }}
+            {{ render_field(form.password_confirm, class='form-control') }}
+            <button class="btn btn-lg btn-primary" type="submit">Sign up</button>
         </form>
     {% endblock %}
 {% endblock %}
