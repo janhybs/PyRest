@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block header %}
+    {% block registration_form %}
+        <form method="POST" action="{{ url_for('user.login') }}">
+            {{ form.csrf_token }}
+            {{ form.username.label }} {{ form.username }}
+            {{ form.password.label }} {{ form.password }}
+            {{ form.password_confirm.label }} {{ form.password_confirm }}
+            <input type="submit" value="Sign up">
+        </form>
+    {% endblock %}
+{% endblock %}
