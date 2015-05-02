@@ -6,7 +6,6 @@ import transaction
 
 from pyrest import app, socket, auth, database, authenticated_only, db
 from flask import redirect
-from pyrest.database.conference import Conference
 
 
 @socket.on ('connect')
