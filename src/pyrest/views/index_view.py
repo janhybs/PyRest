@@ -8,3 +8,8 @@ from flask import redirect, render_template
 @app.route ('/')
 def main ():
     return render_template ('main.html')
+
+
+@app.route('/success', methods=['GET', 'POST'])
+def on_login ():
+    return 'foo'
