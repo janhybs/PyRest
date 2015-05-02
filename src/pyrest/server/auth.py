@@ -15,40 +15,19 @@ class Auth (object):
         self.login_manager.user_loader (self.load_user)
 
         self.users = { }
-        self.check_credentials = None
-
-
-    def login (self, username, password=None, key=None):
-        """
-        Method will generate session id for user
-        and create and return User object
-        If check_credentials is set
-        it will be called
-        """
-        session_id = str (uuid.uuid4 ())
-        user = User (session_id)
-        user.username = username
-        user.password = password
-        user.key = key
-
-        if self.check_credentials is not None and self.check_credentials (user):
-            return user
-        elif self.check_credentials is None:
-            return user
-
-        return None
 
     def login_user (self, user):
         """Login given user"""
         if user is not None:
-            self.users[user.id] = user
+            self.users[user.session_id] = user
             return login_user (user)
         return None
 
-    def load_user (self, user_id):
+    def load_user (self, session_id):
         """Loads user by user_id or return None"""
-        if user_id in self.users:
-            return self.users[user_id]
+
+        if session_id in self.users:
+            return self.users[session_id]
         return None
 
 
@@ -57,8 +36,7 @@ class Auth (object):
         return logout_user ()
 
 
-class User (UserMixin):
-    def __init__ (self, session_id):
-        self.id = session_id
-
-
+class SessionUser (UserMixin):
+    def __init__(self, user, session_id):
+        self.session_id = self.id = session_id
+        self.user = user
