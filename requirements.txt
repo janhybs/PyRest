@@ -5,3 +5,4 @@ Flask-Script==0.4.0
 ZODB==4.1.0
 WTForms==2.0.2
 Flask-WTF==0.9
+Unidecode==0.04.17
