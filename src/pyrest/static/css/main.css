@@ -3,3 +3,63 @@
   margin-left: auto;
   max-width: 1000px; /* or 950px */
 }
+
+.pull-left {
+  float: left !important;
+}
+.pull-right {
+  float: right !important;
+}
+
+.table .table-field-id {
+    margin: 0;
+    text-align: center;
+    width: 36px;
+}
+
+.debug {
+    border: 1px solid red;
+}
+
+.job-list h3 {
+    display: inline;
+}
+
+.job-list li {
+    clear: right;
+}
+
+.job-list .glyphicon {
+    font-size: .7em;
+}
+
+.job-list .detail {
+}
+
+.job-list, .job-list ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.job-list ul {
+    padding-left: 15px;
+}
+
+.job-list > li {
+    margin-bottom: 8px;
+}
+
+.job-list p {
+    padding: 0;
+    margin: 0;
+}
+
+.job-list abbr[title] {
+    cursor: help;
+    border-bottom: none;
+}
+
+.job-list a, .job-list a:hover {
+    text-decoration: none;
+    color: inherit;
+}
