@@ -6,10 +6,10 @@ import transaction
 from flask_wtf import Form
 from wtforms.fields.core import StringField
 from wtforms.fields.simple import PasswordField
-from wtforms.validators import DataRequired, EqualTo
+from wtforms.validators import DataRequired, EqualTo, Email
 
 from pyrest import db
-from pyrest.database.sets.user import User
+from pyrest.database.sets.user import User, UserManagementApplication
 
 
 class SignUpForm (Form):
@@ -20,19 +20,20 @@ class SignUpForm (Form):
         EqualTo ('password', message='Passwords must match')
     ])
 
+    email = StringField ('Email', validators=[Email ()])
+
     def validate (self):
         result = super (Form, self).validate ()
         if not result:
             return result
 
-        user = User.create_user ()
-        user.username = self.username.data
-        user.password = self.password.data
-
-        print db.users.search_one ({ 'username': self.username.data })
         if db.users.search_one ({ 'username': self.username.data }) is not None:
             self.username.errors.append ('User already exists')
             return False
+
+        user = UserManagementApplication.create()
+        user.username = self.username.data
+        user.password = self.password.data
 
         db.users.add (user)
         transaction.commit ()

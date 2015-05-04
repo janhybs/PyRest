@@ -1,0 +1,15 @@
+{% from "_formhelpers.html" import render_field, h1 %}
+{% extends "main.html" %}
+
+{% block content %}
+
+  {{ h1 (get_title()) }}
+
+  <form method=post action="{{ request.path }}">
+      {{ form.csrf_token }}
+      {{ render_field(form.name, class='form-control') }}
+      {{ render_field(form.script, class='form-control') }}
+      <button class="btn btn-lg btn-primary" type="submit">Create</button>
+  </form>
+
+{% endblock %}

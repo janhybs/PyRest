@@ -1,0 +1,36 @@
+{% from "_formhelpers.html" import render_field, h1 %}
+{% extends "main.html" %}
+
+{% block content %}
+
+  {{ h1 (get_title()) }}
+
+  <form method="post" target="{{ request.path }}">
+    <div class="table-responsive">
+      <table class="table table-hover table-condensed">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>name</th>
+              <th>user</th>
+              <th>options</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+              <tr>
+                <td><input type="checkbox" value="{{job.id}}" name="job_id" /></td>
+                <td><small>{{ str_preview(job.id, 3)|e }}</small></td>
+                <td>{{ job.name|e }}</td>
+                <td>{{ job.get_user().username|e }}</td>
+                <td>{{ job.get_user().username|e }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </th>
+      </table>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Send</button>
+  </form>
+
+{% endblock %}

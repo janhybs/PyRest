@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired
 from pyrest import db, auth
 
 
-class LoginForm (Form):
+class SignInForm (Form):
     username = StringField ('Username', validators=[DataRequired ()])
     password = PasswordField ('Password', validators=[DataRequired ()])
 

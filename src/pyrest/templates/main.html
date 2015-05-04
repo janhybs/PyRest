@@ -1,95 +1,101 @@
 <html>
 <head>
-    {% block head %}
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="PyRest demonstration">
-        <meta name="author" content="Jan Hybš">
-        <title>PyRest</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    {% endblock %}
+{% block head %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PyRest demonstration">
+  <meta name="author" content="Jan Hybš">
+  <title>{{ get_title() }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
 </head>
 <body>
-    {% block body %}
-	<div class="container">
-		<div class="jumbotron">
+{% block body %}
 
-            <!-- Flash messages -->
-            {% block flash %}
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        <div class="list-group">
-                        {% for category, message in messages %}
-                            <div class="list-group-item list-group-item-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
-            {% endblock %}
+  {% block nav %}
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+          <span class="sr-only">Toggle nav</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{{ url_for('main') }}">PyRest</a>
+      </div>
 
-            <h1>
-                <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                </a>
-                PyRest example
-            </h1>
-
-            {% block header %}
-                {% block login_control %}
-                    {% if current_user.is_authenticated() %}
-                        <a href="{{ url_for('user.logout') }}">log out {{ current_user.user.username }}</a>
-                    {% else %}
-                        <a href="{{ url_for('user.login') }}">login</a>
-                        or
-                        <a href="{{ url_for('user.sign_up') }}">sign up</a>
-                    {% endif %}
-                {% endblock %}
-
-                {% block login_form %}
-                    <!-- login form -->
-                {% endblock %}
-
-                {% block sign_up_form %}
-                    <!-- sign up form -->
-                {% endblock %}
-
-            {% endblock %}
-
-
-            <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-            <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-            <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    var url = "http://" + document.domain + ":" + location.port;
-                    var socket = io.connect(url + "/");
-                    $("#cityform").submit(function(event) {
-                        socket.emit('city', {'city': $('#city').val()});
-                        $('#city').val('');
-                        return false;
-                    });
-                    socket.on('city', function(msg) {
-                        $("#cities-list").prepend('<li>' + msg.city + '</li>');
-                        console.log ('city event')
-                        console.log (msg);
-                    });
-                    socket.on('connect', function() {
-                        console.log ('CONNECTED')
-                    });
-                    socket.on('disconnect', function() {
-                        console.log ('DISCONNECTED')
-                    });
-                    socket.on('debug', function(msg) {
-                        console.log ('debug: ')
-                        console.log (msg);
-                    });
-                    window.socket = socket;
-
-                });
-            </script>
-        </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          {% if current_user.is_authenticated() %}
+            <li role="presentation" class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                Jobs <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" role="menu">
+                <li role="presentation"><a href="{{ url_for('jobs.create_job') }}">Create new job</a></li>
+                <li role="presentation"><a href="{{ url_for('jobs.list_jobs') }}">Show all Jobs</a></li>
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          {% if current_user.is_authenticated() %}
+            <li role="presentation"><a href="{{ url_for('user.sign_out') }}">Logout <strong>{{ current_user.user.username }}</strong></a></li>
+          {% else %}
+            <li role="presentation"><a href="{{ url_for('user.sign_in') }}">Login</a></li>
+            <li role="presentation"><a href="{{ url_for('user.sign_up') }}">Sign up</a></li>
+          {% endif %}
+        </ul>
+      </div>
     </div>
-    {% endblock %}
+  </nav>
+  {% endblock %}  <!-- nav -->
+
+
+
+  <div class="container">
+    <div class="jumbotron">
+
+      <!-- Flash messages -->
+      {% block flash %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="list-group">
+              {% for category, message in messages %}
+                <div class="list-group-item list-group-item-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      {% endblock %} <!-- flash -->
+
+      {% block content %}
+        {% block main_title_start %}
+        <h1>
+          {% if not match_location('main') %}
+            <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
+              <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+            </a>
+          {% endif %}
+        {% endblock %} <!-- main_title_start -->
+          PyRest
+        {% block main_title_end %}
+        </h1>
+        {% endblock %} <!-- main_title_end -->
+      {% endblock %} <!-- content -->
+
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    </div>
+  </div>
+
+{% endblock %}  <!-- body -->
 </body>
 </html>

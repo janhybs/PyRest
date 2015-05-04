@@ -9,7 +9,7 @@ class BTreeEx (BTrees.OOBTree.BTree):
     def add (self, value):
         return self.insert (value.id, value)
 
-    def search (self, conditions):
+    def search (self, conditions={}):
         result = []
         for (k, v) in self.items ():
             m = { kk: getattr (v, kk, None) == vv for (kk, vv) in conditions.items () }
@@ -18,7 +18,7 @@ class BTreeEx (BTrees.OOBTree.BTree):
                 result.append (v)
         return result
 
-    def search_one (self, conditions):
+    def search_one (self, conditions={}):
         for (k, v) in self.items ():
             m = { kk: getattr (v, kk, None) == vv for (kk, vv) in conditions.items () }
             t_f = list (set (m.values ()))

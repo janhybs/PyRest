@@ -1,13 +1,35 @@
 {% from "_formhelpers.html" import render_field %}
 {% extends "main.html" %}
-{% block header %}
-    {% block registration_form %}
-        <form method=post action="{{ url_for('user.sign_up') }}">
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-up.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <form method="post" class="form-sign-up" action="{{ request.path }}">
+            <h1 class="form-sign-up-heading">
+                <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                </a>
+                Sign up to PyRest
+            </h1>
+
             {{ form.csrf_token }}
-            {{ render_field(form.username, class='form-control') }}
-            {{ render_field(form.password, class='form-control') }}
-            {{ render_field(form.password_confirm, class='form-control') }}
-            <button class="btn btn-lg btn-primary" type="submit">Sign up</button>
+
+            {{ form.username.label(class='sr-only') }}
+            {{ form.username(class='form-control', placeholder='username') }}
+
+            {{ form.password.label(class='sr-only') }}
+            {{ form.password(class='form-control', placeholder='password') }}
+
+            {{ form.password_confirm.label(class='sr-only') }}
+            {{ form.password_confirm(class='form-control', placeholder='confirmation') }}
+
+            {{ form.email.label(class='sr-only') }}
+            {{ form.email(class='form-control', placeholder='your@email') }}
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
-    {% endblock %}
+    </div>
 {% endblock %}

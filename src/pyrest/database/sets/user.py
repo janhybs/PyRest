@@ -17,6 +17,12 @@ class User (persistent.Persistent):
         self.password = None
         self.jobs = PersistentList ()
 
+    def create_session_user (self):
+        return SessionUser (self, str (uuid.uuid1 ()))
+
+    def get_jobs (self):
+        return [db.jobs.get (job_id, None) for job_id in self.jobs]
+
     def __repr__ (self):
         return "<User '{self.username}'>".format (self=self)
 
@@ -26,18 +32,6 @@ class User (persistent.Persistent):
     def __unicode__ (self):
         return self.__repr__ ()
 
-    def create_session_user (self):
-        return SessionUser (self, str (uuid.uuid1 ()))
-
-    def get_jobs (self):
-        return [db.jobs.get (job_id, None) for job_id in self.jobs]
-
-    @staticmethod
-    def create_user ():
-        user = User ()
-        user.id = str (uuid.uuid1 ())
-        return user
-
 
 class UserManagementApplication (BTreeEx):
     def add_default (self):
@@ -45,13 +39,13 @@ class UserManagementApplication (BTreeEx):
         u.id = str (uuid.uuid1 ())
         u.username = 'Hans'
         u.password = 'foo'
-        self.insert (u.id, u)
+        self.add (u)
 
         u = User ()
         u.id = str (uuid.uuid1 ())
         u.username = 'root'
         u.password = 'root'
-        self.insert (u.id, u)
+        self.add (u)
 
     @staticmethod
     def register (db, name, btree_cls):
@@ -60,5 +54,14 @@ class UserManagementApplication (BTreeEx):
             instance = btree_cls ()
             db.__setattr__ (name, instance)
             instance.add_default ()
+
+    @staticmethod
+    def create (*args, **kwargs):
+        user = User ()
+        user.id = kwargs.get ('id', str (uuid.uuid4 ()))
+        user.username = kwargs.get ('username')
+        user.password = kwargs.get ('password')
+
+        return user
 
 

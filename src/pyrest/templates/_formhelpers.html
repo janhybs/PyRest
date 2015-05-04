@@ -6,8 +6,17 @@
       {% if field.errors %}
         <div class="list-group">
         {% for error in field.errors %}
-            <div class="list-group-item list-group-item-danger">{{ error }}</li>
+            <div class="list-group-item list-group-item-danger">{{ error }}</div>
         {% endfor %}
         </div>
       {% endif %}
+{% endmacro %}
+
+{% macro h1 (title) %}
+  <h1>
+  <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+  </a>
+  {{ title|safe }}
+  </h1>
 {% endmacro %}
