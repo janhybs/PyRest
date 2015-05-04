@@ -5,32 +5,91 @@
 
   {{ h1 (get_title()) }}
 
-  <form method="post" target="{{ request.path }}">
-    <div class="table-responsive">
-      <table class="table table-hover table-condensed">
-          <thead>
-            <tr>
-              <th>id</th>
-              <th>name</th>
-              <th>user</th>
-              <th>options</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for job in jobs %}
-              <tr>
-                <td><input type="checkbox" value="{{job.id}}" name="job_id" /></td>
-                <td><small>{{ str_preview(job.id, 3)|e }}</small></td>
-                <td>{{ job.name|e }}</td>
-                <td>{{ job.get_user().username|e }}</td>
-                <td>{{ job.get_user().username|e }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </th>
-      </table>
+
+  <div class="row">
+    <div class="col-md-4">
+      <ul class="job-list">
+      {% for job in jobs %}
+        <li  class=" panel panel-default list-group-item list-group-item-{{ job.get_result_cls() }}">
+          <a href="{{ url_for ('jobs.list_jobs') }}#{{ job.id }}">
+            <div class="panel-body">
+              <h3><small>{{ job.get_user().username|e }} / </small> {{ job.name|e }}</h3>
+              <p class="pull-right"># {{ job.scripts.__len__() }}</p>
+              <ul>
+
+                <li>
+                  <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+                  Result: {{ job.get_result_str() }}
+                </li>
+
+                {% if not job.script() %}
+                  <!---->
+                {% else %}
+
+                  {% if job.script().duration %}
+                    <li>
+                      <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                      Duration: <abbr title="{{ job.get_script_at().duration }}">{{ job.script().duration }} sec</abbr>
+                    </li>
+                  {% endif %}
+
+                  {% if job.script().timestamp %}
+                    <li>
+                      <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                      Finished: <abbr title="{ job.script().timestamp }}">{{ pretty_date(job.script().timestamp) }}</abbr>
+                    </li>
+                  {% endif %}
+                {% endif %}
+
+              </ul>
+            </div>
+          </a>
+        </li>
+
+      {% endfor %}
+      </ul>
     </div>
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Send</button>
-  </form>
+
+    <div class="col-md-8">
+      {% if detail and not detail_job %}
+        <div class="alert alert-danger" role="alert">Job doesn't exists</div>
+      {% elif not detail %}
+        <div class="alert alert-info" role="alert">Loading job details</div>
+      {% else %}
+        {{ detail_job }}
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+  <!--<form method="post" target="{{ request.path }}">-->
+    <!--<div class="table-responsive">-->
+      <!--<table class="table table-hover table-bordered"> &lt;!&ndash; table-condensed &ndash;&gt;-->
+        <!--<thead>-->
+          <!--<tr>-->
+            <!--<th class="table-field-id">#</th>-->
+            <!--<th>id</th>-->
+            <!--<th>name</th>-->
+            <!--<th>user</th>-->
+            <!--<th>options</th>-->
+          <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+          <!--{% for job in jobs %}-->
+            <!--<tr>-->
+              <!--<td class="table-field-id"><input type="checkbox" value="{{job.id}}" name="job_id" /></td>-->
+              <!--<td><small>{{ str_preview(job.id, 3)|e }}</small></td>-->
+              <!--<td>{{ job.name|e }} ({{ job.scripts.__len__()|e }})</td>-->
+              <!--<td>{{ job.get_user().username|e }}</td>-->
+              <!--<td>-->
+                <!--<a href="#"> run &#xbb;</a>-->
+              <!--</td>-->
+            <!--</tr>-->
+          <!--{% endfor %}-->
+        <!--</tbody>-->
+      <!--</table>-->
+    <!--</div>-->
+    <!--<button class="btn btn-lg btn-primary btn-block" type="submit">Send</button>-->
+  <!--</form>-->
 
 {% endblock %}

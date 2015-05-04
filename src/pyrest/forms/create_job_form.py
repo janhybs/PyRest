@@ -28,11 +28,18 @@ class JobForm (Form):
             self.username.errors.append ('Job with this name already exists')
             return False
 
+        # create job instance and default script instance
         job = JobManagementApplication.create (user_id=current_user.user.id, name=self.name.data)
         script = ScriptManagementApplication.create (job_id=job.id, commands=self.script.data)
-        job.scripts.append (script)
 
+        # add default instance id to jobs scripts list
+        job.add_script (script)
+
+        # add script and job to db
+        db.scripts.add (script)
         db.jobs.add (job)
+
+        #commit changes
         transaction.commit ()
 
         return True

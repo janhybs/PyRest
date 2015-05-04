@@ -1,6 +1,7 @@
 # encoding: utf-8
 # author:   Jan Hybs
 import uuid
+from datetime import datetime
 
 import persistent
 from persistent.list import PersistentList
@@ -8,7 +9,7 @@ from persistent.mapping import PersistentMapping
 
 from pyrest import db
 from pyrest.database.BTreeEx import BTreeEx
-from pyrest.database.sets.script import ScriptManagementApplication
+from pyrest.database.sets.script import ScriptManagementApplication, ScriptResult
 
 
 class JobStatus (object):
@@ -31,12 +32,37 @@ class Job (persistent.Persistent):
     def get_scripts (self):
         return [db.scripts.get (script_id, None) for script_id in self.scripts]
 
+    def add_script (self, script):
+        self.scripts.append (script.id)
+
+
+
     def get_user (self):
         return db.users.get (self.user_id)
 
 
+
+    def get_script_at (self, position=-1):
+        try:
+            return db.scripts.get (self.scripts[position])
+        except:
+            return None
+
+    def script (self):
+        return self.get_script_at (-1)
+
+
+
+    def get_result_cls (self):
+        return self.script ().get_result_cls () if self.scripts else 'default'
+
+    def get_result_str (self):
+        return self.script ().get_result_str () if self.scripts else 'No results'
+
+
+
     def __repr__ (self):
-        return u"<Job '{self.name}', scripts=[{self.scripts}]>".format (self=self)
+        return u"<Job '{self.id}' '{self.name}', scripts=[{scripts}]>".format (self=self, scripts=self.get_scripts ())
 
     def __str__ (self):
         return self.__repr__ ()
@@ -44,29 +70,54 @@ class Job (persistent.Persistent):
     def __unicode__ (self):
         return self.__repr__ ()
 
+    def as_dict (self):
+        return dict(
+            id=self.id, user_id=self.user_id,
+            name=self.name, status=self.status,
+            settings=dict(self.settings),
+            scripts=list(self.scripts)
+        )
+
 
 class JobManagementApplication (BTreeEx):
     def add_default (self):
-        job = JobManagementApplication.create (user_id=db.users.search_one().id, name="Job 1")
+        job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
+        script = ScriptManagementApplication.create (job_id=job.id, duration=15.6, timestamp=datetime.now (),
+                                                     result=ScriptResult.success, commands=
+            """echo 'foo'
+
+            sleep 1
+            echo 'bar'
+            """)
+
+        job.add_script (script)
+        db.scripts.add (script)
+        self.add (job)
+
+        job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 2")
         script = ScriptManagementApplication.create (job_id=job.id, commands=
-"""echo 'foo'
+        """echo 'uname'
+        uname -a
 
-sleep 1
-echo 'bar'
-""")
-        job.scripts.append (script)
-        self.add(job)
+        sleep 1
+        echo 'bar'
+        """)
+        job.add_script (script)
+        db.scripts.add (script)
 
-        job = JobManagementApplication.create (user_id=db.users.search_one().id, name="Job 2")
         script = ScriptManagementApplication.create (job_id=job.id, commands=
-"""echo 'uname'
-uname -a
+        """echo 'uname'
+        uname
+        uname -a
+        echo 'bar'
+        """)
 
-sleep 1
-echo 'bar'
-""")
-        job.scripts.append (script)
-        self.add(job)
+        job.add_script (script)
+        db.scripts.add (script)
+        self.add (job)
+
+        job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 3")
+        self.add (job)
 
     @staticmethod
     def register (db, name, btree_cls):
