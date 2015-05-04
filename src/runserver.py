@@ -9,9 +9,12 @@ from pyrest.server.configuration import Configuration
 
 # register roots for non-existing roots
 UserManagementApplication.register (db, 'users', UserManagementApplication)
-JobManagementApplication.register (db, 'jobs', JobManagementApplication)
-ScriptManagementApplication.register (db, 'scripts', ScriptManagementApplication)
+
 CommandManagementApplication.register (db, 'commands', CommandManagementApplication)
+ScriptManagementApplication.register (db, 'scripts', ScriptManagementApplication)
+
+JobManagementApplication.register (db, 'jobs', JobManagementApplication)
+
 
 # confirm changes
 transaction.commit ()
