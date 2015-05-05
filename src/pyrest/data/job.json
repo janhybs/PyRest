@@ -1,0 +1,68 @@
+{
+  "id": "657efb94-927c-4f13-8e58-e0ee2f796a19", 
+  "name": "Job 1", 
+  "scripts": [
+    {
+      "commands": [
+        {
+          "duration": null, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "ebbae441-cc7a-4806-abed-89ccb8975060", 
+          "output": null, 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": "echo 'foo'"
+        }, 
+        {
+          "duration": null, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "782a726c-6e2c-46b4-b4d8-ccf917ab9035", 
+          "output": null, 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": ""
+        }, 
+        {
+          "duration": null, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "4b87c24f-9fe5-4be7-bad0-bf09e15c7495", 
+          "output": null, 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": "            sleep 1"
+        }, 
+        {
+          "duration": null, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "8fef815b-f61c-40a4-abdf-719c4ae1d8ee", 
+          "output": null, 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": "            echo 'bar'"
+        }, 
+        {
+          "duration": null, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "d92156c5-4a3b-4db2-8667-c38b7eff535b", 
+          "output": null, 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": "            "
+        }
+      ], 
+      "duration": 15.6, 
+      "id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+      "job_id": "657efb94-927c-4f13-8e58-e0ee2f796a19", 
+      "result": 1, 
+      "timestamp": 1430822287
+    }
+  ], 
+  "settings": {}, 
+  "status": 4, 
+  "user": {
+    "id": "d109aa66-f312-11e4-b725-0023aea47614", 
+    "jobs": [], 
+    "password": "foo", 
+    "username": "Hans"
+  }
+}
