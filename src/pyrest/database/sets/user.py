@@ -32,6 +32,13 @@ class User (persistent.Persistent):
     def __unicode__ (self):
         return self.__repr__ ()
 
+    def as_dict (self):
+        return dict (
+            id=self.id,
+            username=self.username, password=self.password,
+            jobs=list(self.jobs),
+        )
+
 
 class UserManagementApplication (BTreeEx):
     def add_default (self):

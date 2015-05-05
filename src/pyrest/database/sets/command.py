@@ -10,6 +10,7 @@ from pyrest.database.BTreeEx import BTreeEx
 
 from unidecode import unidecode
 
+
 class CommandExitCode (object):
     unknown = 0
     success = 1
@@ -27,7 +28,7 @@ class Command (persistent.Persistent):
         self.duration = None
 
     def __repr__ (self):
-        sc = unidecode (unicode(self.source_code)) if self.source_code else "''"
+        sc = unidecode (unicode (self.source_code)) if self.source_code else "''"
         return u"{sc}".format (self=self, sc=sc)
 
     def __str__ (self):
@@ -35,6 +36,15 @@ class Command (persistent.Persistent):
 
     def __unicode__ (self):
         return self.__repr__ ()
+
+    def as_dict (self):
+        return dict (
+            id=self.id, script_id=self.script_id,
+            source_code=self.source_code,
+            output=self.output, error=self.error,
+            exit_code=self.exit_code,
+            duration=self.duration
+        )
 
 
 class CommandManagementApplication (BTreeEx):

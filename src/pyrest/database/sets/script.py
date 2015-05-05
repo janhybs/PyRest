@@ -48,6 +48,14 @@ class Script (persistent.Persistent):
     def __unicode__ (self):
         return self.__repr__ ()
 
+    def as_dict (self):
+        return dict (
+            id=self.id, job_id=self.job_id,
+            timestamp=int(self.timestamp) if self.timestamp else None, result=self.result,
+            duration=self.duration,
+            commands=[command.as_dict () for command in self.commands]
+        )
+
 
 class ScriptManagementApplication (BTreeEx):
     @staticmethod

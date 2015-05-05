@@ -1,7 +1,6 @@
 # encoding: utf-8
 # author:   Jan Hybs
-import uuid
-from datetime import datetime
+import uuid, time
 
 import persistent
 from persistent.list import PersistentList
@@ -36,10 +35,8 @@ class Job (persistent.Persistent):
         self.scripts.append (script.id)
 
 
-
     def get_user (self):
         return db.users.get (self.user_id)
-
 
 
     def get_script_at (self, position=-1):
@@ -52,13 +49,11 @@ class Job (persistent.Persistent):
         return self.get_script_at (-1)
 
 
-
     def get_result_cls (self):
         return self.script ().get_result_cls () if self.scripts else 'default'
 
     def get_result_str (self):
         return self.script ().get_result_str () if self.scripts else 'No results'
-
 
 
     def __repr__ (self):
@@ -71,18 +66,19 @@ class Job (persistent.Persistent):
         return self.__repr__ ()
 
     def as_dict (self):
-        return dict(
-            id=self.id, user_id=self.user_id,
+        return dict (
+            id=self.id,
             name=self.name, status=self.status,
-            settings=dict(self.settings),
-            scripts=list(self.scripts)
+            settings=dict (self.settings),
+            scripts=[script.as_dict () for script in self.get_scripts ()],
+            user=self.get_user ().as_dict ()
         )
 
 
 class JobManagementApplication (BTreeEx):
     def add_default (self):
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
-        script = ScriptManagementApplication.create (job_id=job.id, duration=15.6, timestamp=datetime.now (),
+        script = ScriptManagementApplication.create (job_id=job.id, duration=15.6, timestamp=time.time (),
                                                      result=ScriptResult.success, commands=
             """echo 'foo'
 
