@@ -93,7 +93,7 @@ def pretty_date (time=False, now_=None):
     'just now', etc
     """
     now = datetime.now () if now_ is None else now_
-    if type (time) is int:
+    if type (time) is int or type (time) is float:
         diff = now - datetime.fromtimestamp (time)
     elif isinstance (time, datetime):
         diff = now - time
