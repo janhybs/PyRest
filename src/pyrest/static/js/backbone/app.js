@@ -1,17 +1,19 @@
-var AppView = Backbone.View.extend({
-    // el - stands for element. Every view has a element associate in with HTML
-    //      content will be rendered.
+var app = app || {};
 
-    el: '#job_container',
-    // It's the first function called when this view it's instantiated.
+$ (function () {
+    'use strict';
 
-    initialize: function () {
-        this.render();
-    },
 
-    // $el - it's a cached jQuery object (el), in which you can use jQuery functions
-    //       to push content. Like the Hello World in this case.
-    render: function () {
-        this.$el.html("Hello World");
-    }
+    //$.ajax('http://localhost/jsapp/data/job-1.json', function ())
+    //console.log (app.ScriptCollection.url)
+
+    var job = new app.Job ({id: 'job-1.json'});
+    job.fetch ({
+        success: function (model, response) {
+            window.job = job;
+            new app.JobView ({model: job});
+        }
+    });
+
+
 });

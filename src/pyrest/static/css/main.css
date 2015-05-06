@@ -1,14 +1,15 @@
 .container-fluid {
-  margin-right: auto;
-  margin-left: auto;
-  max-width: 1000px; /* or 950px */
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 1000px; /* or 950px */
 }
 
 .pull-left {
-  float: left !important;
+    float: left !important;
 }
+
 .pull-right {
-  float: right !important;
+    float: right !important;
 }
 
 .table .table-field-id {
@@ -36,7 +37,7 @@
 .job-list .detail {
 }
 
-.job-list, .job-list ul {
+.job-list, .job-list ul, #job-view ul, #job-view ol {
     padding-left: 0;
     list-style: none;
 }
@@ -64,15 +65,45 @@
     color: inherit;
 }
 
-
-
-
 #todo-list input.edit {
     display: none; /* Hides input box*/
 }
+
 #todo-list .editing label {
     display: none; /* Hides label text when .editing*/
 }
+
 #todo-list .editing input.edit {
     display: inline; /* Shows input text box when .editing*/
+}
+
+.command {
+    counter-reset: line-numbering;
+}
+
+.command li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    clear: right;
+}
+
+.command li:before {
+    content: counter(line-numbering);
+    counter-increment: line-numbering;
+    padding-right: 10px;
+    color: #999;
+    text-align: right;
+    display: inline-block;
+    min-width: 40px;
+}
+
+.command pre {
+    clear: right;
+    margin-left: 40px;
+}
+
+.command .stderr {
+    background: rgb(247, 232, 232);
+    border-color: rgb(245, 140, 140);
 }

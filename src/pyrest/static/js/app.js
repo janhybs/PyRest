@@ -17,19 +17,17 @@ app.TodoList = Backbone.Collection.extend ({
 
 app.todoList = new app.TodoList ();
 
-// renders individual two-doo items list (li)
+// renders individual todo items list (li)
 app.TodoView = Backbone.View.extend ({
     tagName: 'li',
     template: _.template ($ ('#item-template').html ()),
     render: function () {
-        console.log ('rendering');
         this.$el.html (this.template (this.model.toJSON ()));
         this.input = this.$ ('.edit');
         return this; // enable chained calls
     },
     initialize: function () {
         this.model.on ('change', this.render, this);
-        this.model.on ('destroy', this.remove, this); // remove: Convenience Backbone'
     },
     events: {
         'dblclick label': 'edit',
@@ -37,9 +35,6 @@ app.TodoView = Backbone.View.extend ({
         'blur .edit': 'close',
         'click .toggle': 'toggleCompleted',
         'click .destroy': 'destroy'
-    },
-    destroy: function (e) {
-        this.model.destroy ();
     },
     edit: function () {
         this.$el.addClass ('editing');
@@ -73,15 +68,10 @@ app.AppView = Backbone.View.extend ({
         // when new elements are added to the collection render then with addOne
         app.todoList.on ('add', this.addOne, this);
         app.todoList.on ('reset', this.addAll, this);
-        app.todoList.on ('remove', this.removeModel, this);
         app.todoList.fetch (); // Loads list from local storage
     },
     events: {
         'keypress #new-todo': 'createTodoOnEnter'
-    },
-    removeModel: function (e) {
-        console.log ('remove');
-        console.log (e);
     },
     createTodoOnEnter: function (e) {
         if (e.which !== 13 || !this.input.val ().trim ()) { // ENTER_KEY = 13
@@ -91,12 +81,13 @@ app.AppView = Backbone.View.extend ({
         this.input.val (''); // clean input box
     },
     addOne: function (todo) {
-        console.log ('add');
         var view = new app.TodoView ({model: todo});
         $ ('#todo-list').append (view.render ().el);
     },
+    destroyOne: function (e) {
+        this.model.destroy();
+    },
     addAll: function () {
-        console.log ('reset');
         this.$ ('#todo-list').html (''); // clean the two-doo list
         app.todoList.each (this.addOne, this);
     },
@@ -108,29 +99,11 @@ app.AppView = Backbone.View.extend ({
     }
 });
 
-
-var AppRouter = Backbone.Router.extend ({
-    routes: {
-        "test/:id": "getId", // matches http://example.com/#test/anything-here accessable as id
-        "*actions": "defaultRoute" // matches http://example.com/#anything-here
-    }
-});
-app.router = new AppRouter ();
-
-app.router.on ('route:getId', function (actions) {
-    console.log ('getId');
-    console.log (actions);
-});
-
-app.router.on ('route:defaultRoute', function (actions) {
-    console.log ('defaultRoute');
-    console.log (actions);
-});
-
-Backbone.history.start ();
-
 //--------------
 // Initializers
 //--------------
 
+
 app.appView = new app.AppView ();
+
+app.todoList.trigger ('reset')
