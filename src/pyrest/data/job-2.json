@@ -1,0 +1,25 @@
+{
+  "id": "657efb94-927c-4f13-8e58-e0ee2f796a19", 
+  "name": "Job 1", 
+  "scripts": [
+    {
+      "commands": [
+        {
+          "duration": 0.1, 
+          "error": null, 
+          "exit_code": 0, 
+          "id": "ebbae441-cc7a-4806-abed-89ccb8975060", 
+          "output": "foo\n", 
+          "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
+          "source_code": "echo 'foo'"
+        }
+  ], 
+  "settings": {}, 
+  "status": 4, 
+  "user": {
+    "id": "d109aa66-f312-11e4-b725-0023aea47614", 
+    "jobs": [], 
+    "password": "foo", 
+    "username": "Hans"
+  }
+}

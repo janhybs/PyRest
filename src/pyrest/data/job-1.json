@@ -5,16 +5,16 @@
     {
       "commands": [
         {
-          "duration": null, 
+          "duration": 0.1, 
           "error": null, 
           "exit_code": 0, 
           "id": "ebbae441-cc7a-4806-abed-89ccb8975060", 
-          "output": null, 
+          "output": "foo\n", 
           "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
           "source_code": "echo 'foo'"
         }, 
         {
-          "duration": null, 
+          "duration": 0.1, 
           "error": null, 
           "exit_code": 0, 
           "id": "782a726c-6e2c-46b4-b4d8-ccf917ab9035", 
@@ -23,22 +23,22 @@
           "source_code": ""
         }, 
         {
-          "duration": null, 
+          "duration": 1.03, 
           "error": null, 
           "exit_code": 0, 
           "id": "4b87c24f-9fe5-4be7-bad0-bf09e15c7495", 
           "output": null, 
           "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
-          "source_code": "            sleep 1"
+          "source_code": "sleep 1"
         }, 
         {
           "duration": null, 
-          "error": null, 
+          "error": "Unknown command: error near 'bar", 
           "exit_code": 0, 
           "id": "8fef815b-f61c-40a4-abdf-719c4ae1d8ee", 
-          "output": null, 
+          "output": "--no output--", 
           "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
-          "source_code": "            echo 'bar'"
+          "source_code": "echo 'bar"
         }, 
         {
           "duration": null, 
@@ -47,7 +47,7 @@
           "id": "d92156c5-4a3b-4db2-8667-c38b7eff535b", 
           "output": null, 
           "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 
-          "source_code": "            "
+          "source_code": ""
         }
       ], 
       "duration": 15.6, 
