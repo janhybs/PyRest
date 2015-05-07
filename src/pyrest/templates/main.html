@@ -93,11 +93,11 @@
       <!--<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
       <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>-->
       <!--<script src="{{ url_for('static', filename='js/main.js') }}"></script>&ndash;&gt;&ndash;&gt;-->
+      {% block scripts %}
       <script src="/static/js/frameworks/jquery-2.1.3.js"></script>
       <script src="/static/js/frameworks/underscore.js"></script>
-      <script src="/static/js/frameworks/backbone.js"></script>
-      <script src="/static/js/frameworks/backbone.localStorage.js"></script>
-      <script src="/static/js/backbone/app.js"></script>
+      <script src="/static/js/frameworks/bootstrap.min.js"></script>
+      {% endblock %}
     </div>
   </div>
 

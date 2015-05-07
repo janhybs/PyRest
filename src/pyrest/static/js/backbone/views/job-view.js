@@ -21,12 +21,20 @@ var app = app || {};
 
             this.render ();
         },
+        events: {
+            'click .collapsible-command': 'collapsibleClicked'
+        },
 
         render: function () {
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
-            console.log (this.model.toJSON ());
             return this;
-        }
+        },
+
+
+
+        collapsibleClicked: function (e) {
+            $(e.currentTarget).next().toggleClass ('collapsible-closed');
+        },
         //events: {
         //    'keypress #new-todo': 'createTodoOnEnter'
         //},
