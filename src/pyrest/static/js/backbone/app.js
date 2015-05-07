@@ -7,13 +7,12 @@ $ (function () {
     //$.ajax('http://localhost/jsapp/data/job-1.json', function ())
     //console.log (app.ScriptCollection.url)
 
-    var job = new app.Job ({id: 'job-1.json'});
-    job.fetch ({
-        success: function (model, response) {
-            window.job = job;
-            new app.JobView ({model: job});
-        }
-    });
+    app.job = new app.Job ();
+    app.jobView = new app.JobView ({model: app.job})
+
+    app.router = new app.AppRouter();
+    Backbone.history.start();
+
 
 
 });
