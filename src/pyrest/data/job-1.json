@@ -34,7 +34,7 @@
         {
           "duration": null, 
           "error": "Unknown command: error near 'bar", 
-          "exit_code": 0, 
+          "exit_code": 127, 
           "id": "8fef815b-f61c-40a4-abdf-719c4ae1d8ee", 
           "output": "--no output--", 
           "script_id": "f900610e-c02b-4602-98cf-c29fc84c8dce", 

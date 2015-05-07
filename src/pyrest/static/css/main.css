@@ -4,13 +4,6 @@
     max-width: 1000px; /* or 950px */
 }
 
-.pull-left {
-    float: left !important;
-}
-
-.pull-right {
-    float: right !important;
-}
 
 .table .table-field-id {
     margin: 0;
@@ -77,15 +70,38 @@
     display: inline; /* Shows input text box when .editing*/
 }
 
+.script .info-name {
+    font-weight: bold;
+}
+
+.script .info-value:after {
+    content: " | ";
+    padding: 0 10px;
+    color: #999;
+    font-size: 0.7em;
+}
+
+.script .info-value:last-of-type:after {
+    content: "";
+}
+
+.script {
+    margin: 20px 0 10px;
+}
+
 .command {
     counter-reset: line-numbering;
 }
 
-.command li {
+.command li,.command .stdout-stderr {
     list-style: none;
     margin: 0;
     padding: 0;
-    clear: right;
+    background: #EEE;
+}
+
+.command .stdout-stderr {
+    background: #FFF;
 }
 
 .command li:before {
@@ -98,12 +114,55 @@
     min-width: 40px;
 }
 
-.command pre {
-    clear: right;
-    margin-left: 40px;
+.command li .source, .command li .info {
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+    color: #333;
+    background: none;
 }
 
-.command .stderr {
-    background: rgb(247, 232, 232);
-    border-color: rgb(245, 140, 140);
+
+.command li .info {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 0.7em;
+    height: 24px;
+    line-height: 22px;
+    color: #3a2825;
+    background: #d7cbc8;
+    padding: 2px 6px 2px 6px;
+    margin: 2px 5px 2px 0;
+}
+
+.command .non-collapsible-command:before {
+    background: #EEE;
+}
+.command .collapsible-command:before {
+    background: #666;
+    color: #CCC;
+}
+
+.command .stdout-stderr pre {
+    display: block;
+    border: none;
+    padding: 5px;
+    margin: 0 0 0 40px ;
+    border-radius: 0;
+    font-size: 0.8em;
+}
+.command .stdout-stderr .stderr {
+    border-left: 5px solid #F58C8C;
+    background: #F7E8E8;
+    color: #c7254e;
+}
+.command .stdout-stderr .stdout {
+    border-left: 5px solid #62c32a;
+    background: #e8f7d9;
+    color: #4e8822;
+}
+
+
+.collapsible-closed {
+    display: none;
+    clear: right;
 }

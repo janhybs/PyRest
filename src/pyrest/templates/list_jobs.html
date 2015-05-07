@@ -11,7 +11,7 @@
       <ul class="job-list">
       {% for job in jobs %}
         <li  class=" panel panel-default list-group-item list-group-item-{{ job.get_result_cls() }}">
-          <a href="{{ url_for ('jobs.list_jobs') }}#{{ job.id }}">
+          <a href="{{ url_for ('jobs.list_jobs') }}#job/{{ job.id }}">
             <div class="panel-body">
               <h3><small>{{ job.get_user().username|e }} / </small> {{ job.name|e }}</h3>
               <p class="pull-right"># {{ job.scripts.__len__() }}</p>
@@ -50,11 +50,11 @@
       </ul>
     </div>
 
-    <div class="col-md-8">
+    <div class="col-md-8" id="job-view">
       {% if detail and not detail_job %}
         <div class="alert alert-danger" role="alert">Job doesn't exists</div>
       {% elif not detail %}
-        <div class="alert alert-info" role="alert">Loading job details</div>
+        <div class="alert alert-info job-loading" role="alert">Loading job details</div>
       {% else %}
         {{ detail_job }}
       {% endif %}
@@ -62,34 +62,88 @@
     </div>
   </div>
 </div>
-  <!--<form method="post" target="{{ request.path }}">-->
-    <!--<div class="table-responsive">-->
-      <!--<table class="table table-hover table-bordered"> &lt;!&ndash; table-condensed &ndash;&gt;-->
-        <!--<thead>-->
-          <!--<tr>-->
-            <!--<th class="table-field-id">#</th>-->
-            <!--<th>id</th>-->
-            <!--<th>name</th>-->
-            <!--<th>user</th>-->
-            <!--<th>options</th>-->
-          <!--</tr>-->
-        <!--</thead>-->
-        <!--<tbody>-->
-          <!--{% for job in jobs %}-->
-            <!--<tr>-->
-              <!--<td class="table-field-id"><input type="checkbox" value="{{job.id}}" name="job_id" /></td>-->
-              <!--<td><small>{{ str_preview(job.id, 3)|e }}</small></td>-->
-              <!--<td>{{ job.name|e }} ({{ job.scripts.__len__()|e }})</td>-->
-              <!--<td>{{ job.get_user().username|e }}</td>-->
-              <!--<td>-->
-                <!--<a href="#"> run &#xbb;</a>-->
-              <!--</td>-->
-            <!--</tr>-->
-          <!--{% endfor %}-->
-        <!--</tbody>-->
-      <!--</table>-->
-    <!--</div>-->
-    <!--<button class="btn btn-lg btn-primary btn-block" type="submit">Send</button>-->
-  <!--</form>-->
 
+  <!-- Templates -->
+  <script type="text/template" id="job-template">
+    <div class="job-content panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><%= name %>
+          <small> <%= id %></small>
+        </h3>
+      </div>
+      <div class="panel-body">
+
+        <% var i = 0; _.each(scripts, function(script) { i++ %>
+        <ul>
+          <li>
+            <h4 class="script">Script <%= i %></h4>
+
+            <div class="script">
+              <span class="glyphicon glyphicon-tag info-icon" aria-hidden="true"></span>
+              <span class="info-name">Result: </span>
+              <span class=" info-value"><%= script.result %></span>
+
+              <span class="glyphicon glyphicon-time info-icon" aria-hidden="true"></span>
+              <span class="info-name">Duration: </span>
+              <span class=" info-value"><%= script.duration %></span>
+
+              <span class="glyphicon glyphicon-calendar info-icon" aria-hidden="true"></span>
+              <span class="info-name">Finished: </span>
+              <span class="info-value"><%= script.timestamp %></span>
+            </div>
+
+            <ol class="command">
+              <% _.each(script.commands, function(command) { %>
+
+              <% if (command.source_code) { %>
+              <% if (command.isComplex) { %>
+              <li class="collapsible-command">
+                <% } else { %>
+              <li class="non-collapsible-command">
+                <% } %>
+
+
+                <code class="source"><%= command.source_code %></code>
+
+                <% if (command.exit_code != 0) { %>
+                <code class="info pull-right">exit: <%= command.exit_code %></code>
+                <% } %>
+
+                <% if (command.duration) { %>
+                <code class="info pull-right"><%= command.duration %>s</code>
+                <% } %>
+              </li>
+
+              <% if (command.isComplex) { %>
+              <div class="collapsible-closed stdout-stderr">
+                <% if (command.output) { %>
+                <pre class="stdout text-info"><code><%= command.output %></code></pre>
+                <% } %>
+
+                <% if (command.error) { %>
+                <pre class="stderr text-danger"><code><%= command.error %></code></pre>
+                <% } %>
+              </div>
+              <% } %>
+
+              <% } %>
+              <% }); %>
+            </ol>
+          </li>
+        </ul>
+        <% }); %>
+      </div>
+    </div>
+  </script>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="/static/js/frameworks/backbone.js"></script>
+  <script src="/static/js/frameworks/backbone.localStorage.js"></script>
+  <script src="/static/js/backbone/models/job.js"></script>
+  <script src="/static/js/backbone/views/job-view.js"></script>
+  <script src="/static/js/backbone/routers/router.js"></script>
+  <script src="/static/js/backbone/app.js"></script>
 {% endblock %}
