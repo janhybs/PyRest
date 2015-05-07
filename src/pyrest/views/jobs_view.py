@@ -36,7 +36,7 @@ def list_jobs ():
 
 @app.route('/api/jobs/get/<job_id>')
 def get_job_by_id (job_id):
-    job_id = db.jobs.search_one ().id
+    # job_id = db.jobs.search_one ().id
     job = db.jobs.get (job_id) if job_id else None
     
     if not job:
