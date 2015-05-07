@@ -11,11 +11,12 @@ var app = app || {};
 
 
         // load data
-        urlRoot: 'data/',
+        urlRoot: '/api/jobs/get',
 
         // Default attributes for the todo
         // and ensure that each todo created has `title` and `completed` keys.
         defaults: {
+            id: '',
             name: '',
             status: '',
             settings: {},
@@ -23,17 +24,19 @@ var app = app || {};
         },
 
         parse: function (response) {
+
+        // detect broken link and return 'broken' model for view to show
             if (_.has (response, "scripts")) {
-                this.scripts = new app.ScriptCollection (response.scripts, {
-                    parse: true
-                });
+                this.scripts = new app.ScriptCollection (response.scripts, {parse: true});
                 delete response.scripts;
+            } else {
+                this.scripts = new app.ScriptCollection ([], {parse: true});
             }
             return response;
         },
         toJSON: function () {
             var json = _.clone (this.attributes);
-            json.scripts = this.scripts.toJSON ();
+            json.scripts = this.scripts ? this.scripts.toJSON () : [];
             return json;
         }
 
@@ -52,6 +55,7 @@ var app = app || {};
     app.Script = Backbone.Model.extend ({
         defaults: {
             duration: '',
+            id: '',
             result: '',
             timestamp: ''
         },
@@ -67,7 +71,7 @@ var app = app || {};
         },
         toJSON: function () {
             var json = _.clone (this.attributes);
-            json.commands = this.commands.toJSON ();
+            json.commands = this.commands ? this.commands.toJSON () : [];
             return json;
         }
     });
@@ -78,6 +82,15 @@ var app = app || {};
             output: '',
             error: '',
             source_code: ''
+        },
+
+        parse: function (response) {
+            return response;
+        },
+        toJSON: function () {
+            var json = _.clone (this.attributes);
+            json.isComplex = (json.error ? json.error.length > 0 : false)  || (json.output ? json.output.length > 0 : false);
+            return json;
         }
     });
 
