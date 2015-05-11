@@ -8,62 +8,39 @@
 
   <div class="row">
     <div class="col-md-4">
-      <ul class="job-list">
-      {% for job in jobs %}
-        <li  class=" panel panel-default list-group-item list-group-item-{{ job.get_result_cls() }}">
-          <a href="{{ url_for ('jobs.list_jobs') }}#job/{{ job.id }}">
-            <div class="panel-body">
-              <h3><small>{{ job.get_user().username|e }} / </small> {{ job.name|e }}</h3>
-              <p class="pull-right"># {{ job.scripts.__len__() }}</p>
-              <ul>
-
-                <li>
-                  <span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
-                  Result: {{ job.get_result_str() }}
-                </li>
-
-                {% if not job.script() %}
-                  <!---->
-                {% else %}
-
-                  {% if job.script().duration %}
-                    <li>
-                      <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                      Duration: <abbr title="{{ job.get_script_at().duration }}">{{ job.script().duration }} sec</abbr>
-                    </li>
-                  {% endif %}
-
-                  {% if job.script().timestamp %}
-                    <li>
-                      <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                      Finished: <abbr title="{ job.script().timestamp }}">{{ pretty_date(job.script().timestamp) }}</abbr>
-                    </li>
-                  {% endif %}
-                {% endif %}
-
-              </ul>
-            </div>
-          </a>
-        </li>
-
-      {% endfor %}
+      <ul class="job-list" id="job-list">
+        <li class="alert alert-info job-loading" role="alert">Loading job list</li>
       </ul>
     </div>
 
     <div class="col-md-8" id="job-view">
-      {% if detail and not detail_job %}
-        <div class="alert alert-danger" role="alert">Job doesn't exists</div>
-      {% elif not detail %}
-        <div class="alert alert-info job-loading" role="alert">Loading job details</div>
-      {% else %}
-        {{ detail_job }}
-      {% endif %}
-
     </div>
   </div>
 </div>
 
   <!-- Templates -->
+  <script type="text/template" id="no-jobs-template">
+    <li class="alert alert-warning job-loading" role="alert">
+      Currently there are no <strong>jobs</strong> created.
+      But you can <a href="{{ url_for ('jobs.create_job') }}" class="btn btn-warning">create job</a> right now.
+    </li>
+  </script>
+
+  <script type="text/template" id="message-template">
+    <div class="alert alert-<%= type %>" role="alert"><%= message %></div>
+  </script>
+
+  <script type="text/template" id="job-peek-template">
+    <li class="panel panel-default list-group-item list-group-item-default">
+      <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>">
+        <div class="panel-body">
+          <h3><small>{'{ .username|e }} / </small> <%= name %></h3>
+          <p class="pull-right">#<%= scripts.length %></p>
+        </div>
+      </a>
+    </li>
+  </script>
+
   <script type="text/template" id="job-template">
     <div class="job-content panel panel-default">
       <div class="panel-heading">
@@ -142,8 +119,17 @@
   {{ super() }}
   <script src="/static/js/frameworks/backbone.js"></script>
   <script src="/static/js/frameworks/backbone.localStorage.js"></script>
+
+  <!-- models and collections -->
   <script src="/static/js/backbone/models/job.js"></script>
+  <script src="/static/js/backbone/collections/jobs.js"></script>
+
+  <!-- views -->
   <script src="/static/js/backbone/views/job-view.js"></script>
+  <script src="/static/js/backbone/views/job-peek-view.js"></script>
+  <script src="/static/js/backbone/views/app-view.js"></script>
+
+  <!-- routers and app -->
   <script src="/static/js/backbone/routers/router.js"></script>
   <script src="/static/js/backbone/app.js"></script>
 {% endblock %}

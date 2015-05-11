@@ -12,25 +12,43 @@ var app = app || {};
         el: '#job-view',
 
         jobTemplate: _.template ($ ('#job-template').html ()),
+        messageTemplate: _.template ($ ('#message-template').html ()),
+
 
         initialize: function () {
             this.$loading = this.$ ('.job-loading');
             this.$content = this.$ ('.job-content');
 
-            this.model.on ('change', this.render, this);
-
-            this.render ();
+            this.model.on ('change', this.onChange, this);
         },
         events: {
             'click .collapsible-command': 'collapsibleClicked'
         },
 
         render: function () {
+
+            console.log ('rendering job...');
+
+            if (this.model.isLoading)
+                return this.$el.html (this.messageTemplate ({message: 'Loading job details', type: 'info'}));
+
+            if (this.model.isBroken)
+                return this.$el.html (this.messageTemplate ({message: 'No such job', type: 'danger'}));
+
+            if (this.model.id == "")
+                return this.$el.html ('');
+
+            console.log (this.model);
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
+
             return this;
         },
 
-
+        onChange: function () {
+            console.log ('model changed');
+            this.render();
+            return this;
+        },
 
         collapsibleClicked: function (e) {
             $(e.currentTarget).next().toggleClass ('collapsible-closed');

@@ -2,7 +2,8 @@
 # author:   Jan Hybs
 
 import functools, ZODB.FileStorage, ZODB.DB
-from flask import Flask, request, render_template, url_for, g, redirect
+import json
+from flask import Flask, request, render_template, url_for, g, redirect, Response
 from flask_login import current_user
 from flask_socketio import SocketIO
 from datetime import datetime
@@ -144,6 +145,18 @@ def with_tittle (title, *args_, **kwargs_):
         return decorated_function
 
     return decorator
+
+
+def json_response (f):
+    @functools.wraps (f)
+    def decorated_function (*args, **kwargs):
+        result = f (*args, **kwargs)
+        if isinstance (result, Response):
+            return result
+        return Response (json.dumps (result, indent=2), mimetype='application/json')
+
+    return decorated_function
+
 
 
 from pyrest.views import index_view, user_view, jobs_view

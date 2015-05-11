@@ -3,22 +3,23 @@
 
 import uuid
 import BTrees.OOBTree
+from operator import itemgetter
 
 
 class BTreeEx (BTrees.OOBTree.BTree):
     def add (self, value):
         return self.insert (value.id, value)
 
-    def search (self, conditions={}):
+    def search (self, conditions={ }, sort=None):
         result = []
         for (k, v) in self.items ():
             m = { kk: getattr (v, kk, None) == vv for (kk, vv) in conditions.items () }
             t_f = list (set (m.values ()))
             if len (t_f) == 0 or (len (t_f) == 1 and t_f[0] == True):
                 result.append (v)
-        return result
+        return result if not sort else sorted (result, key=lambda d: getattr (d, sort))
 
-    def search_one (self, conditions={}):
+    def search_one (self, conditions={ }):
         for (k, v) in self.items ():
             m = { kk: getattr (v, kk, None) == vv for (kk, vv) in conditions.items () }
             t_f = list (set (m.values ()))

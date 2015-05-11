@@ -6,15 +6,13 @@ var app = app || {};
     // Job Model
     // ----------
 
-    // Our basic **Todo** model has `title`, `order`, and `completed` attributes.
     app.Job = Backbone.Model.extend ({
 
 
         // load data
-        urlRoot: '/api/jobs/get',
+        urlRoot: '/api/jobs/',
 
-        // Default attributes for the todo
-        // and ensure that each todo created has `title` and `completed` keys.
+        // Default attributes
         defaults: {
             id: '',
             name: '',
@@ -39,17 +37,6 @@ var app = app || {};
             json.scripts = this.scripts ? this.scripts.toJSON () : [];
             return json;
         }
-
-        //
-        //initialize: function () {
-        //    this.set("scripts", new app.User());
-        //}
-        //// Toggle the `completed` state of this todo item.
-        //toggle: function () {
-        //    this.save({
-        //        completed: !this.get('completed')
-        //    });
-        //}
     });
 
     app.Script = Backbone.Model.extend ({

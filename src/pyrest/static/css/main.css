@@ -4,6 +4,9 @@
     max-width: 1000px; /* or 950px */
 }
 
+.jumbotron p {
+    font-size: 14px;
+}
 
 .table .table-field-id {
     margin: 0;
@@ -53,7 +56,7 @@
     border-bottom: none;
 }
 
-.job-list a, .job-list a:hover {
+.job-list .simple-a, .job-list .simple-a:hover {
     text-decoration: none;
     color: inherit;
 }

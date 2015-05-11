@@ -6,16 +6,43 @@ $ (function () {
 
     app.AppRouter = Backbone.Router.extend({
 
+        noRoute:  true,
+
         routes: {
             "job/:job_id":  "loadJob",
+            "*anoything": "lastHook"
         },
 
         loadJob: function(job_id, page) {
-            app.job.set('id', job_id)
-            app.job.fetch ();
+            this.noRoute = false;
+
+            app.job.id = job_id
+            app.job.isLoading = true;
+            app.job.isBroken = false;
+            app.jobView.render();
+
+            app.job.fetch ({
+                success: function () {
+                    app.job.isLoading = false;
+                    app.job.isBroken = false;
+                    app.jobView.render();
+                },
+                error: function () {
+                    app.job.isLoading = false;
+                    app.job.isBroken = true;
+                    app.jobView.render();
+                }
+            });
+        },
+
+        lastHook: function (page) {
+            this.noRoute = true;
         }
 
     });
+
+    app.appRouter = new app.AppRouter();
+    Backbone.history.start();
 
 
 });
