@@ -12,6 +12,7 @@ var app = app || {};
 		// Instead of generating a new element, bind to the existing skeleton of
 		// the App already present in the HTML.
 		el: '#job-list',
+		current_id: '',
 
 		noJobsTemplate: _.template($('#no-jobs-template').html()),
 
@@ -19,13 +20,22 @@ var app = app || {};
 		events: {
 //			'keypress #new-todo': 'createOnEnter',
 //			'click #clear-completed': 'clearCompleted',
-//			'click #toggle-all': 'toggleAllComplete'
+//            'click .run-script': 'runScript'
 		},
+
+        updateStyles: function (current_id) {
+            debug ('updating styles');
+            this.current_id = current_id;
+
+            $(".job-link").removeClass('selected');
+            $(".job-link[data-job-id='" + this.current_id + "']").addClass('selected');
+        },
 
 		// At initialization we bind to the relevant events on the `Todos`
 		// collection, when items are added or changed. Kick things off by
 		// loading any preexisting todos that might be saved in *localStorage*.
 		initialize: function () {
+		    debug ('init app view')
 
 		    var that = this;
 //			this.allCheckbox = this.$('#toggle-all')[0];
@@ -36,6 +46,7 @@ var app = app || {};
 //
 			this.listenTo(app.jobs, 'add', this.addOne);
 			this.listenTo(app.jobs, 'reset', this.addAll);
+			this.listenTo(app.appRouter, 'jobIdChange', this.onJobIdChange);
 //			this.listenTo(app.todos, 'change:completed', this.filterOne);
 //			this.listenTo(app.todos, 'filter', this.filterAll);
 //			this.listenTo(app.todos, 'all', _.debounce(this.render, 0));
@@ -44,33 +55,39 @@ var app = app || {};
 			// from being re-rendered for every model. Only renders when the 'reset'
 			// event is triggered at the end of the fetch.
 
+            debug ('fetching job-list...')
 			app.jobs.fetch({reset: true,
 			    success: function() {
-
+                    debug ('fetch job-list ok')
 			        // check jobs obtained
 			        if (app.jobs.length == 0) {
 			            // no jobs found, create one
-			            console.log ('no jobs')
 			            that.render ();
 			            return;
 			        }
 
 			        // check current url
-			        if (app.appRouter.noRoute) {
-			            console.log ('no route')
+			        if (app.appRouter.job_id === false) {
 			            // on empty route, set id of first received job_id
 			            var job_id = app.jobs.models[0].id;
 			            app.appRouter.navigate ('job/'+job_id, {trigger: true});
+			        } else {
+			            // trigger job id change after render is complete
+			            app.appRouter.trigger ('jobIdChange', app.appRouter.job_id);
 			        }
 			    }
 			});
 		},
 
+        onJobIdChange: function (job_id) {
+            debug ('onJobIdChange ' + job_id);
+            this.updateStyles (job_id);
+        },
+
 		// Re-rendering the App just means refreshing the statistics -- the rest
 		// of the app doesn't change.
 		render: function () {
-		    console.log ('rendering app');
-
+		    debug ('render app');
 		    if (app.jobs.length == 0) {
 		        this.$el.html (this.noJobsTemplate ({  }));
 		        app.jobView.render ();
@@ -106,6 +123,7 @@ var app = app || {};
 
 		// Add all items in the **Todos** collection at once.
 		addAll: function () {
+		    debug ('adding jobs')
 			this.$list.html('');
 			app.jobs.each(this.addOne, this);
 		},

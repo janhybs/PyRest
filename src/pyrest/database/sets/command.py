@@ -27,6 +27,12 @@ class Command (persistent.Persistent):
         self.exit_code = None
         self.duration = None
 
+    def is_valid (self):
+        return bool (self.get_source ())
+
+    def get_source (self):
+        return self.source_code.strip ()
+
     def __repr__ (self):
         sc = unidecode (unicode (self.source_code)) if self.source_code else "''"
         return u"{sc}".format (self=self, sc=sc)

@@ -14,7 +14,10 @@ $ (function () {
         },
 
         loadJob: function(job_id, page) {
-            this.noRoute = false;
+            this.job_id = job_id;
+
+            debug ('triggering');
+            this.trigger('jobIdChange', this.job_id);
 
             app.job.id = job_id
             app.job.isLoading = true;
@@ -36,13 +39,12 @@ $ (function () {
         },
 
         lastHook: function (page) {
-            this.noRoute = true;
+            this.job_id = false;
         }
 
     });
 
     app.appRouter = new app.AppRouter();
-    Backbone.history.start();
 
 
 });

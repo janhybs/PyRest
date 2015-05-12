@@ -56,9 +56,22 @@
     border-bottom: none;
 }
 
-.job-list .simple-a, .job-list .simple-a:hover {
+.job-list .job-link, .job-list .job-link:hover {
     text-decoration: none;
     color: inherit;
+}
+
+#job-list .job-link:focus, #job-list .job-link:hover {
+    background: #DDD;
+    color: inherit;
+}
+
+#job-list .selected {
+    background: #777 !important;
+    color: #EEE !important;
+}
+#job-list .selected small {
+    color: #FFF !important;
 }
 
 #todo-list input.edit {
@@ -89,6 +102,14 @@
 }
 
 .script {
+    margin: 20px 0 10px;
+    clear: right;
+}
+.script h4 {
+    display: inline-block;
+}
+
+.script-info {
     margin: 20px 0 10px;
 }
 

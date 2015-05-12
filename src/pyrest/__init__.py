@@ -3,7 +3,7 @@
 
 import functools, ZODB.FileStorage, ZODB.DB
 import json
-from flask import Flask, request, render_template, url_for, g, redirect, Response
+from flask import Flask, request, render_template, url_for, g, redirect, Response, Blueprint
 from flask_login import current_user
 from flask_socketio import SocketIO
 from datetime import datetime
@@ -158,11 +158,18 @@ def json_response (f):
     return decorated_function
 
 
+# build blueprints
+_jobs_ = Blueprint ('jobs', __name__, template_folder='templates')
+_user_ = Blueprint ('user', __name__, template_folder='templates')
+_api_ = Blueprint ('api', __name__, template_folder='templates')
 
+
+
+# import views
 from pyrest.views import index_view, user_view, jobs_view
+from pyrest.sockets import run_code
 
-from pyrest.sockets import output_socket
-
-
-app.register_blueprint (user_view.user, url_prefix='/user')
-app.register_blueprint (jobs_view.jobs, url_prefix='/jobs')
+# register blueprints
+app.register_blueprint (_user_, url_prefix='/user')
+app.register_blueprint (_jobs_, url_prefix='/jobs')
+app.register_blueprint (_api_, url_prefix='/api')

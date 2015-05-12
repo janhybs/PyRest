@@ -31,8 +31,9 @@
   </script>
 
   <script type="text/template" id="job-peek-template">
-    <li class="panel panel-default list-group-item list-group-item-default">
-      <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>">
+    <li>
+      <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>" data-job-id="<%= id %>"
+         class="job-link panel panel-default list-group-item list-group-item-default">
         <div class="panel-body">
           <h3><small>{'{ .username|e }} / </small> <%= name %></h3>
           <p class="pull-right">#<%= scripts.length %></p>
@@ -50,12 +51,15 @@
       </div>
       <div class="panel-body">
 
-        <% var i = 0; _.each(scripts, function(script) { i++ %>
+        <% var i = 0; _.each(scripts, function(script) { i++; %>
         <ul>
-          <li>
-            <h4 class="script">Script <%= i %></h4>
+          <li class="script">
+            <h4>Script <%= i %></h4>
+            <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= script.id %>">
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run script
+            </a>
 
-            <div class="script">
+            <div class="script-info">
               <span class="glyphicon glyphicon-tag info-icon" aria-hidden="true"></span>
               <span class="info-name">Result: </span>
               <span class=" info-value"><%= script.result %></span>
@@ -119,10 +123,12 @@
   {{ super() }}
   <script src="/static/js/frameworks/backbone.js"></script>
   <script src="/static/js/frameworks/backbone.localStorage.js"></script>
+  <script src="/static/js/frameworks/socket.io.min.js"></script>
 
   <!-- models and collections -->
   <script src="/static/js/backbone/models/job.js"></script>
   <script src="/static/js/backbone/collections/jobs.js"></script>
+  <script src="/static/js/backbone/sockets/run-code.js"></script>
 
   <!-- views -->
   <script src="/static/js/backbone/views/job-view.js"></script>
@@ -131,5 +137,6 @@
 
   <!-- routers and app -->
   <script src="/static/js/backbone/routers/router.js"></script>
+
   <script src="/static/js/backbone/app.js"></script>
 {% endblock %}

@@ -20,15 +20,19 @@ var app = app || {};
             this.$content = this.$ ('.job-content');
 
             this.model.on ('change', this.onChange, this);
+            this.listenTo (app.appSocket, 'socket-event', this.onSocketEvent);
         },
         events: {
-            'click .collapsible-command': 'collapsibleClicked'
+            'click .collapsible-command': 'collapsibleClicked',
+            'click .run-script': 'runScript'
+        },
+
+        onSocketEvent: function () {
+            console.log ('job view');
+            console.log (arguments);
         },
 
         render: function () {
-
-            console.log ('rendering job...');
-
             if (this.model.isLoading)
                 return this.$el.html (this.messageTemplate ({message: 'Loading job details', type: 'info'}));
 
@@ -38,14 +42,12 @@ var app = app || {};
             if (this.model.id == "")
                 return this.$el.html ('');
 
-            console.log (this.model);
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
 
             return this;
         },
 
         onChange: function () {
-            console.log ('model changed');
             this.render();
             return this;
         },
@@ -53,9 +55,13 @@ var app = app || {};
         collapsibleClicked: function (e) {
             $(e.currentTarget).next().toggleClass ('collapsible-closed');
         },
-        //events: {
-        //    'keypress #new-todo': 'createTodoOnEnter'
-        //},
+
+        runScript: function (ev) {
+            var script_id = $(ev.currentTarget).data ('script-id');
+            var job_id = this.model.id;
+            app.appSocket.sendRunScriptRequest (job_id, script_id);
+        },
+
         //createTodoOnEnter: function(e){
         //    if ( e.which !== 13 || !this.input.val().trim() ) { // ENTER_KEY = 13
         //        return;

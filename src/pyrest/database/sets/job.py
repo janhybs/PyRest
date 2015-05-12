@@ -81,9 +81,10 @@ class JobManagementApplication (BTreeEx):
         script = ScriptManagementApplication.create (job_id=job.id, duration=15.6, timestamp=time.time (),
                                                      result=ScriptResult.success, commands=
             """echo 'foo'
-
-            sleep 1
-            echo 'bar'
+            ls
+            ls -la
+            sleep 3
+            java -version
             """)
 
         job.add_script (script)
