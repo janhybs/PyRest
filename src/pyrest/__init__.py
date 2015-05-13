@@ -2,7 +2,7 @@
 # author:   Jan Hybs
 
 import functools, ZODB.FileStorage, ZODB.DB
-import json
+import json, time
 from flask import Flask, request, render_template, url_for, g, redirect, Response, Blueprint
 from flask_login import current_user
 from flask_socketio import SocketIO
@@ -157,6 +157,13 @@ def json_response (f):
 
     return decorated_function
 
+
+start_time = time.time ()
+
+
+def millis (since_start=False):
+    dt = time.time () - start_time if since_start else time.time ()
+    return int(dt * 1000)
 
 # build blueprints
 _jobs_ = Blueprint ('jobs', __name__, template_folder='templates')
