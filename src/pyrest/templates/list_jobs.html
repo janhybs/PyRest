@@ -53,7 +53,7 @@
 
         <% var i = 0; _.each(scripts, function(script) { i++; %>
         <ul>
-          <li class="script">
+          <li class="script" id="script_<%= script.id %>">
             <h4>Script <%= i %></h4>
             <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= script.id %>">
               <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run script
@@ -76,37 +76,50 @@
             <ol class="command">
               <% _.each(script.commands, function(command) { %>
 
-              <% if (command.source_code) { %>
-              <% if (command.isComplex) { %>
-              <li class="collapsible-command">
+              <% if (!!command.source_code.trim()) { %>
+                <% if (command.hasData) { %>
+                  <li class="collapsible-command" id="command_<%= command.id %>">
                 <% } else { %>
-              <li class="non-collapsible-command">
+                  <li class="non-collapsible-command" id="command_<%=  command.id %>">
                 <% } %>
 
 
-                <code class="source"><%= command.source_code %></code>
+                  <code class="source"><%= command.source_code %></code>
 
-                <% if (command.exit_code != 0) { %>
-                <code class="info pull-right">exit: <%= command.exit_code %></code>
-                <% } %>
+                  <% if (command.exitCodeRepr) { %>
+                    <code class="info pull-right exit-info"><%= command.exitCodeRepr %></code>
+                  <% } else { %>
+                    <code class="info pull-right exit-info hidden" />
+                  <% } %>
 
-                <% if (command.duration) { %>
-                <code class="info pull-right"><%= command.duration %>s</code>
-                <% } %>
-              </li>
+                  <% if (command.durationRepr) { %>
+                    <code class="info pull-right duration-info"><%= command.durationRepr %></code>
+                  <% } else { %>
+                    <code class="info pull-right duration-info hidden" />
+                  <% } %>
+                </li>
 
-              <% if (command.isComplex) { %>
-              <div class="collapsible-closed stdout-stderr">
-                <% if (command.output) { %>
-                <pre class="stdout text-info"><code><%= command.output %></code></pre>
-                <% } %>
+                <div class="collapsible-closed stdout-stderr">
+                  <% if (command.outputLines.length) { %>
+                    <pre class="stdout text-info">
+                        <% _.each(command.outputLines, function (value, index) { %>
+                          <li><%= value %></li>
+                        <% }); %>
+                    </pre>
+                  <% } else { %>
+                    <pre class="stdout text-info hidden" />
+                  <% } %>
 
-                <% if (command.error) { %>
-                <pre class="stderr text-danger"><code><%= command.error %></code></pre>
-                <% } %>
-              </div>
-              <% } %>
-
+                  <% if (command.errorLines.length) { %>
+                    <pre class="stderr text-info">
+                        <% _.each(command.errorLines, function (value, index) { %>
+                          <li><%= value %></li>
+                        <% }); %>
+                    </pre>
+                  <% } else { %>
+                    <pre class="stderr text-danger hidden" />
+                  <% } %>
+                </div>
               <% } %>
               <% }); %>
             </ol>

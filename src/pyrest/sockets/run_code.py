@@ -5,7 +5,7 @@ from flask_socketio import emit
 import time
 import transaction
 
-from pyrest import app, socket, auth, database, authenticated_only, db
+from pyrest import app, socket, auth, database, authenticated_only, db, millis
 from flask import redirect
 import subprocess
 
@@ -35,15 +35,19 @@ def socket_run_code_request (info):
         if command.is_valid ():
 
             start_details = details.copy ()
-            start_details.update ({ 'command_id': command.id })
+            start_details.update ({ 'command_id': command.id, 'start_at': millis () })
             socket.emit ('command-start', start_details)
-
-            process = subprocess.Popen (command.get_source (), shell=True, stdout=subprocess.PIPE,
+            time.sleep (0.1)
+            process = subprocess.Popen (command.get_source (), shell=True,
+                                        stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE)
+
             for line in iter (process.stdout.readline, ''):
                 stdout_details = start_details.copy ()
                 stdout_details.update ({ 'stdout': line })
                 socket.emit ('stdout', stdout_details)
+
+                command.output = line if not command.output else command.output + line
 
             for line in iter (process.stderr.readline, ''):
                 stderr_details = start_details.copy ()
@@ -51,30 +55,41 @@ def socket_run_code_request (info):
                 socket.emit ('stderr', stderr_details)
                 # time.sleep(.3)
 
+                command.error = line if not command.error else command.error + line
+
+            print process.wait()
+
             end_details = start_details.copy ()
+            end_details.update ({ 'end_at': millis (), 'exit_code': process.returncode });
             socket.emit ('command-end', end_details)
 
-                # emit ('debug', message);
+            command.duration = end_details['end_at'] - start_details['start_at']
+            command.exit_code = process.returncode
+            time.sleep (0.1)
 
-                # emit ('city', { 'city': escape (current_user.username + ": " + message['city']) })
-                # city = message['city']
-                #
-                # conference = db.conference.get (city)
-                #
-                # if conference is None:
-                # print 'creating new conference'
-                # new_conference = Conference ()
-                # new_conference.city = city
-                # new_conference.users.append (current_user.username)
-                #     # commit changes
-                #     db.conference.insert (city, new_conference)
-                #     transaction.commit ()
-                # else:
-                #     print 'updating conference'
-                #     conference.users.append (current_user.username)
-                #     # commit changes
-                #     transaction.commit ()
-                #
-                # for c in db.conference.items ():
-                #     msg = c[1].get_info ()
-                #     emit ('city', { 'city': msg })
+            transaction.commit ()
+
+            # emit ('debug', message);
+
+            # emit ('city', { 'city': escape (current_user.username + ": " + message['city']) })
+            # city = message['city']
+            #
+            # conference = db.conference.get (city)
+            #
+            # if conference is None:
+            # print 'creating new conference'
+            # new_conference = Conference ()
+            # new_conference.city = city
+            # new_conference.users.append (current_user.username)
+            # # commit changes
+            #     db.conference.insert (city, new_conference)
+            #     transaction.commit ()
+            # else:
+            #     print 'updating conference'
+            #     conference.users.append (current_user.username)
+            #     # commit changes
+            #     transaction.commit ()
+            #
+            # for c in db.conference.items ():
+            #     msg = c[1].get_info ()
+            #     emit ('city', { 'city': msg })

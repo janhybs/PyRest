@@ -27,9 +27,43 @@ var app = app || {};
             'click .run-script': 'runScript'
         },
 
-        onSocketEvent: function () {
-            console.log ('job view');
-            console.log (arguments);
+        onSocketEvent: function (event, data) {
+            var $li = $('#command_'.concat (data.command_id));
+            var $code = $('#command_'.concat (data.command_id).concat (' .source'));
+
+            switch (event) {
+                case 'command-start':
+                    $code.removeClass ('queued');
+                    $li.addClass ('running');
+                    break;
+
+                case 'command-end':
+                    $li.removeClass ('running');
+
+
+                    var duration = data.end_at - data.start_at;
+                    if (duration >= 200)
+                        $li.find('.duration-info').removeClass ('hidden').html (duration.toString().concat(' ms'));
+
+                    var exit_code = data.exit_code;
+                    if (exit_code != 0)
+                        $li.find('.exit-info').removeClass ('hidden').html ('exit: '.concat (exit_code.toString()));
+
+                    // auto-close
+                    // $li.next().addClass ('collapsible-closed');
+                    break;
+
+                case 'stdout':
+                case 'stderr':
+
+                    $li.removeClass ('non-collapsible-command');
+                    $li.addClass ('collapsible-command');
+
+                    $li.next().removeClass ('collapsible-closed');
+                    $li.next().find ('.'.concat(event)).removeClass ('hidden');
+                    $li.next().find ('.'.concat(event)).append ('<li>' + data[event] + '</li>');
+                    break;
+            }
         },
 
         render: function () {
@@ -42,6 +76,7 @@ var app = app || {};
             if (this.model.id == "")
                 return this.$el.html ('');
 
+            console.log (this.model);
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
 
             return this;
@@ -59,6 +94,8 @@ var app = app || {};
         runScript: function (ev) {
             var script_id = $(ev.currentTarget).data ('script-id');
             var job_id = this.model.id;
+            $('#script_'.concat (script_id).concat (' .command .source')).addClass ('queued');
+            $('#script_'.concat (script_id).concat (' .stdout-stderr pre')).html('');
             app.appSocket.sendRunScriptRequest (job_id, script_id);
         },
 

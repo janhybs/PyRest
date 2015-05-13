@@ -21,11 +21,23 @@ var app = app || {};
             // register events
             this.connection.on ('connect', this.onConnect);
             this.connection.on ('disconnect', this.onDisconnect);
-            this.connection.on ('command-start', this.onCommandStart);
-            this.connection.on ('command-end', this.onCommandEnd);
-            this.connection.on ('stdout', this.onStdout);
-            this.connection.on ('stderr', this.onStderr);
-            this.connection.on ('debug', this.onDebug);
+
+            // relay other events
+            this.registerEvents (
+                'debug', 'stdout', 'stderr',
+                'command-start', 'command-end'
+            );
+        },
+
+
+        registerEvents: function () {
+            _.each (arguments, function (event, index, args) {
+                var ctx = this;
+                this.connection.on (event,
+                    function (data) {
+                        ctx.trigger ('socket-event', event, data);
+                });
+            }, this);
         },
 
         sendRunScriptRequest: function (job_id, script_id) {
@@ -80,9 +92,8 @@ var app = app || {};
 
         initialize: function () {
             _.bindAll (this,
-                'onConnect', 'onDisconnect', 'onDebug',
-                'sendRunScriptRequest', 'connect',
-                'onCommandStart', 'onCommandEnd', 'onStdout', 'onStderr'
+                'onConnect', 'onDisconnect', 'registerEvents',
+                'sendRunScriptRequest', 'connect'
                 );
         }
 
