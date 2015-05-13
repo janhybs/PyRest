@@ -6,9 +6,10 @@ import persistent
 from persistent.list import PersistentList
 
 from pyrest import db
-from pyrest.database.BTreeEx import BTreeEx
+from pyrest.database.btree import BTreeEx
 
 from unidecode import unidecode
+from pyrest.database.dbutils import DBUtils
 
 
 class CommandExitCode (object):
@@ -57,7 +58,7 @@ class CommandManagementApplication (BTreeEx):
     @staticmethod
     def create (*args, **kwargs):
         command = Command ()
-        command.id = kwargs.get ('id', str (uuid.uuid4 ()))
+        command.id = DBUtils.id (kwargs)
         command.script_id = kwargs.get ('script_id')
         command.source_code = kwargs.get ('source_code')
         command.output = kwargs.get ('output')

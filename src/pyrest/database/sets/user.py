@@ -6,7 +6,8 @@ import persistent
 from persistent.list import PersistentList
 
 from pyrest import db
-from pyrest.database.BTreeEx import BTreeEx
+from pyrest.database.btree import BTreeEx
+from pyrest.database.dbutils import DBUtils
 from pyrest.server.auth import SessionUser
 
 
@@ -36,7 +37,7 @@ class User (persistent.Persistent):
         return dict (
             id=self.id,
             username=self.username, password=self.password,
-            jobs=list(self.jobs),
+            jobs=list (self.jobs),
         )
 
 
@@ -65,7 +66,7 @@ class UserManagementApplication (BTreeEx):
     @staticmethod
     def create (*args, **kwargs):
         user = User ()
-        user.id = kwargs.get ('id', str (uuid.uuid4 ()))
+        user.id = DBUtils.id (kwargs)
         user.username = kwargs.get ('username')
         user.password = kwargs.get ('password')
 

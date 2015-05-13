@@ -7,7 +7,8 @@ import persistent
 from persistent.list import PersistentList
 
 from pyrest import db
-from pyrest.database.BTreeEx import BTreeEx
+from pyrest.database.btree import BTreeEx
+from pyrest.database.dbutils import DBUtils
 from pyrest.database.sets.command import CommandManagementApplication
 
 
@@ -40,7 +41,7 @@ class Script (persistent.Persistent):
         return ScriptResult._strings[self.result]
 
     def __repr__ (self):
-        return u"<Script '{self.timestamp}', commands=[{self.commands}]>".format (self=self)
+        return u"<Script {self.id} '{self.timestamp}', commands=[{self.commands}]>".format (self=self)
 
     def __str__ (self):
         return self.__repr__ ()
@@ -61,7 +62,7 @@ class ScriptManagementApplication (BTreeEx):
     @staticmethod
     def create (*args, **kwargs):
         script = Script ()
-        script.id = kwargs.get ('id', str (uuid.uuid4 ()))
+        script.id = DBUtils.id (kwargs)
         script.job_id = kwargs.get ('job_id')
         script.timestamp = kwargs.get ('timestamp')
         script.result = kwargs.get ('result', ScriptResult.unknown)

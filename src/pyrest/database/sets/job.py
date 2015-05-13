@@ -7,7 +7,8 @@ from persistent.list import PersistentList
 from persistent.mapping import PersistentMapping
 
 from pyrest import db
-from pyrest.database.BTreeEx import BTreeEx
+from pyrest.database.btree import BTreeEx
+from pyrest.database.dbutils import DBUtils
 from pyrest.database.sets.script import ScriptManagementApplication, ScriptResult
 
 
@@ -70,7 +71,8 @@ class Job (persistent.Persistent):
             id=self.id,
             name=self.name, status=self.status,
             settings=dict (self.settings),
-            scripts=[script.as_dict () for script in self.get_scripts ()] if not peek else [script_id for script_id in self.scripts],
+            scripts=[script.as_dict () for script in self.get_scripts ()] if not peek else [script_id for script_id in
+                                                                                            self.scripts],
             user=self.get_user ().as_dict ()
         )
 
@@ -83,7 +85,9 @@ class JobManagementApplication (BTreeEx):
             """echo 'foo'
             ls
             ls -la
-            sleep 3
+            sleep 1
+            java -versioncas
+            java -version 2>&1
             java -version
             """)
 
@@ -127,7 +131,7 @@ class JobManagementApplication (BTreeEx):
     @staticmethod
     def create (*args, **kwargs):
         job = Job ()
-        job.id = kwargs.get ('id', str (uuid.uuid4 ()))
+        job.id = DBUtils.id (kwargs)
         job.name = kwargs.get ('name')
         job.user_id = kwargs.get ('user_id')
         job.scripts = kwargs.get ('scripts', PersistentList ())
