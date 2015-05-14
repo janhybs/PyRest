@@ -1,21 +1,13 @@
 # encoding: utf-8
 # author:   Jan Hybs
-import uuid
-
 import persistent
 from persistent.list import PersistentList
 
-from pyrest import db
 from pyrest.database.btree import BTreeEx
 
 from unidecode import unidecode
 from pyrest.database.dbutils import DBUtils
 
-
-class CommandExitCode (object):
-    unknown = 0
-    success = 1
-    error = 2
 
 
 class Command (persistent.Persistent):
@@ -23,9 +15,9 @@ class Command (persistent.Persistent):
         self.id = None
         self.script_id = None
         self.source_code = None
-        self.output = None
-        self.error = None
+        self.outputLines = []
         self.exit_code = None
+        self.start_at = None
         self.duration = None
 
     def is_valid (self):
@@ -48,8 +40,9 @@ class Command (persistent.Persistent):
         return dict (
             id=self.id, script_id=self.script_id,
             source_code=self.source_code,
-            output=self.output, error=self.error,
+            outputLines=self.outputLines,
             exit_code=self.exit_code,
+            start_at=self.start_at,
             duration=self.duration
         )
 
@@ -61,10 +54,10 @@ class CommandManagementApplication (BTreeEx):
         command.id = DBUtils.id (kwargs)
         command.script_id = kwargs.get ('script_id')
         command.source_code = kwargs.get ('source_code')
-        command.output = kwargs.get ('output')
-        command.error = kwargs.get ('error')
-        command.exit_code = kwargs.get ('exit_code', CommandExitCode.unknown)
-        command.duration = kwargs.get ('commands')
+        command.outputLines = kwargs.get ('outputLines', [])
+        command.exit_code = kwargs.get ('exit_code')
+        command.start_at = kwargs.get ('start_at')
+        command.duration = kwargs.get ('duration')
         return command
 
     @staticmethod

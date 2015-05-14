@@ -9,7 +9,7 @@ from persistent.mapping import PersistentMapping
 from pyrest import db
 from pyrest.database.btree import BTreeEx
 from pyrest.database.dbutils import DBUtils
-from pyrest.database.sets.script import ScriptManagementApplication, ScriptResult
+from pyrest.database.sets.script import ScriptManagementApplication, ScriptExitCode
 
 
 class JobStatus (object):
@@ -80,9 +80,9 @@ class Job (persistent.Persistent):
 class JobManagementApplication (BTreeEx):
     def add_default (self):
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
-        script = ScriptManagementApplication.create (job_id=job.id, duration=15.6, timestamp=time.time (),
-                                                     result=ScriptResult.success, commands=
-            """echo 'foo'
+        script = ScriptManagementApplication.create (job_id=job.id,commands=
+            """ping -c 4 www.tul.cz
+            echo 'foo'
             ls
             ls -la
             sleep 1

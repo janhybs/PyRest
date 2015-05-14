@@ -12,36 +12,51 @@ from pyrest.database.dbutils import DBUtils
 from pyrest.database.sets.command import CommandManagementApplication
 
 
-class ScriptResult (object):
+class ScriptExitCode (object):
     _classes = ['default', 'success', 'warning', 'danger']
     _strings = ['No results', 'Success', 'Running', 'Error']
 
-    unknown = 0
+    ok = 0
     success = 1
     running = 2
     error = 3
+    unknown = 666
 
 
 class Script (persistent.Persistent):
     def __init__ (self):
         self.id = None
         self.job_id = None
-        self.timestamp = None
-        self.result = None
-        self.commands = PersistentList ()
+        self.start_at = None
         self.duration = None
+        self.exit_code = None
+        self.commands = PersistentList ()
+
+
+    def copy (self):
+        script = Script()
+        script.job_id = self.job_id
+        script.start_at = self.start_at
+        script.duration = self.duration
+        script.exit_code = self.exit_code
+        script.commands = self.commands
+        script.id = DBUtils.unique_id()
+
+        return script
+
+
 
     def get_commands (self):
         return [db.commands.get (command_id, None) for command_id in self.commands]
 
     def get_result_cls (self):
-        return ScriptResult._classes[self.result]
+        return ScriptExitCode._classes[self.result]
 
     def get_result_str (self):
-        return ScriptResult._strings[self.result]
+        return ScriptExitCode._strings[self.result]
 
     def __repr__ (self):
-        return u"<Script {self.id} '{self.timestamp}', commands=[{self.commands}]>".format (self=self)
+        return u"<Script {self.id} '{self.exit_code}', commands=[{self.commands}]>".format (self=self)
 
     def __str__ (self):
         return self.__repr__ ()
@@ -52,7 +67,7 @@ class Script (persistent.Persistent):
     def as_dict (self):
         return dict (
             id=self.id, job_id=self.job_id,
-            timestamp=int(self.timestamp) if self.timestamp else None, result=self.result,
+            start_at=int(self.start_at) if self.start_at else None, exit_code=self.exit_code,
             duration=self.duration,
             commands=[command.as_dict () for command in self.commands]
         )
@@ -64,8 +79,8 @@ class ScriptManagementApplication (BTreeEx):
         script = Script ()
         script.id = DBUtils.id (kwargs)
         script.job_id = kwargs.get ('job_id')
-        script.timestamp = kwargs.get ('timestamp')
-        script.result = kwargs.get ('result', ScriptResult.unknown)
+        script.start_at = kwargs.get ('start_at')
+        script.exit_code = kwargs.get ('exit_code', ScriptExitCode.unknown)
         script.duration = kwargs.get ('duration')
 
         commands = kwargs.get ('commands', '').splitlines ()
