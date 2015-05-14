@@ -53,15 +53,20 @@ var app = app || {};
                     // $li.next().addClass ('collapsible-closed');
                     break;
 
-                case 'stdout':
-                case 'stderr':
+                case 'command-output':
 
                     $li.removeClass ('non-collapsible-command');
                     $li.addClass ('collapsible-command');
 
                     $li.next().removeClass ('collapsible-closed');
-                    $li.next().find ('.'.concat(event)).removeClass ('hidden');
-                    $li.next().find ('.'.concat(event)).append ('<li>' + data[event] + '</li>');
+                    $li.next().find ('.'.concat('command-output')).removeClass ('hidden');
+
+                    // add output
+                    var $holder = $li.next().find ('.'.concat('command-output'));
+                    _.each (data.output, function (r) {
+                        $holder.append ('<li class="command-output-' + r.type + '">' + r.line + '</li>');
+                    });
+
                     break;
             }
         },
@@ -76,7 +81,6 @@ var app = app || {};
             if (this.model.id == "")
                 return this.$el.html ('');
 
-            console.log (this.model);
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
 
             return this;

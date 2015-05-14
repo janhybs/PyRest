@@ -56,7 +56,12 @@
           <li class="script" id="script_<%= script.id %>">
             <h4>Script <%= i %></h4>
             <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= script.id %>">
-              <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run script
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+              <% if (script.exit_code === 666) { %>
+                Run script
+              <% } else { %>
+               Rerun script
+              <% } %>
             </a>
 
             <div class="script-info">
@@ -101,23 +106,13 @@
 
                 <div class="collapsible-closed stdout-stderr">
                   <% if (command.outputLines.length) { %>
-                    <pre class="stdout text-info">
+                    <pre class="text-info command-output">
                         <% _.each(command.outputLines, function (value, index) { %>
-                          <li><%= value %></li>
+                          <li class="command-output-<%= value.type %>"><%= value.line %></li>
                         <% }); %>
                     </pre>
                   <% } else { %>
-                    <pre class="stdout text-info hidden" />
-                  <% } %>
-
-                  <% if (command.errorLines.length) { %>
-                    <pre class="stderr text-info">
-                        <% _.each(command.errorLines, function (value, index) { %>
-                          <li><%= value %></li>
-                        <% }); %>
-                    </pre>
-                  <% } else { %>
-                    <pre class="stderr text-danger hidden" />
+                    <pre class="text-info command-output hidden" />
                   <% } %>
                 </div>
               <% } %>

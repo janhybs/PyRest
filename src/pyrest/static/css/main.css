@@ -201,13 +201,13 @@
     white-space: nowrap;
 }
 
-.command .stdout-stderr .stderr {
+.command .stdout-stderr .command-output-stderr {
     border-left: 5px solid #F58C8C;
     background: #F7E8E8;
     color: #c7254e;
 }
 
-.command .stdout-stderr .stdout {
+.command .stdout-stderr .command-output-stdout {
     border-left: 5px solid #62c32a;
     background: #e8f7d9;
     color: #4e8822;
