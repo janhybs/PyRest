@@ -41,10 +41,10 @@ var app = app || {};
 
     app.Script = Backbone.Model.extend ({
         defaults: {
-            duration: '',
             id: '',
-            result: '',
-            timestamp: ''
+            exit_code: null,
+            start_at: null,
+            duration: null
         },
 
         parse: function (response) {
@@ -65,10 +65,12 @@ var app = app || {};
 
     app.Command = Backbone.Model.extend ({
         defaults: {
-            duration: '',
-            output: '',
-            error: '',
-            source_code: ''
+            id: '',
+            duration: null,
+            outputLines: [],
+            errorLines: [],
+            exit_code: null,
+            source_code: null
         },
 
         parse: function (response) {
@@ -77,18 +79,9 @@ var app = app || {};
         toJSON: function () {
             var json = _.clone (this.attributes);
 
-            json.outputLines = !json.output ? [] : json.output.toString().split ('\n')
-            if (json.outputLines.length > 0 && json.outputLines[json.outputLines.length -1] === "")
-                json.outputLines.pop ();
-
-            json.errorLines = !json.error ? [] : json.error.toString().split ('\n')
-            if (json.errorLines.length > 0 && json.errorLines[json.errorLines.length -1] === "")
-                json.errorLines.pop ();
-
             json.hasData = (json.errorLines.length + json.outputLines.length) > 0;
             json.durationRepr = json.duration > 200 ? json.duration + ' ms' : false;
-            json.exitCodeRepr = json.exit_code != 0 ? 'exit: ' + json.exit_code : false;
-            console.log (json);
+            json.exitCodeRepr = json.exit_code !== null && json.exit_code != 0 ? 'exit: ' + json.exit_code : false;
             return json;
         }
     });

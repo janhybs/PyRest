@@ -21,10 +21,11 @@ var app = app || {};
             // register events
             this.connection.on ('connect', this.onConnect);
             this.connection.on ('disconnect', this.onDisconnect);
+            this.connection.on ('debug', this.onDebug);
 
             // relay other events
             this.registerEvents (
-                'debug', 'stdout', 'stderr',
+                'command-output',
                 'command-start', 'command-end'
             );
         },
@@ -35,6 +36,8 @@ var app = app || {};
                 var ctx = this;
                 this.connection.on (event,
                     function (data) {
+                        debugSocket (event);
+                        console.log (data);
                         ctx.trigger ('socket-event', event, data);
                 });
             }, this);
@@ -69,7 +72,8 @@ var app = app || {};
         },
 
         onDebug: function (msg) {
-//            debugSocket (msg);
+            debugSocket ('dbg');
+            console.log (msg);
         },
 
         onCommandStart: function (msg) {

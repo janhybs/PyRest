@@ -5,9 +5,12 @@ from flask_socketio import emit
 import time
 import transaction
 
-from pyrest import app, socket, auth, database, authenticated_only, db, millis
+from pyrest import app, socket, auth, database, authenticated_only, db, millis, emit_event
 from flask import redirect
 import subprocess
+from pyrest.database.sets.script import ScriptExitCode
+from pyrest.server.dotdict import DotDict
+from pyrest.sockets.async import AsyncProcess
 
 
 @socket.on ('connect')
@@ -25,71 +28,69 @@ def socket_disconnect ():
 def socket_run_code_request (info):
     # emit ('debug', 'socket_run_code_request for "%"' % current_user.user.username)
 
-    job = db.jobs.get (info['job_id'])
-    script = db.scripts.get (info['script_id'])
+    info = DotDict (info)
 
-    details = { 'job_id': info['job_id'], 'script_id': info['script_id'] }
+    job = db.jobs.get (info.job_id)
+    script = db.scripts.get (info.script_id)
+    rerun = script.exit_code != ScriptExitCode.unknown
+
+    base_event = DotDict ()
+    base_event.job_id = info.job_id
+    base_event.script_id = info.script_id
+
+    script.start_at = millis ()
+    worst_exit_code = 0
 
     for command in script.commands:
-        # skip empty commands
-        if command.is_valid ():
 
-            start_details = details.copy ()
-            start_details.update ({ 'command_id': command.id, 'start_at': millis () })
-            socket.emit ('command-start', start_details)
-            time.sleep (0.1)
-            process = subprocess.Popen (command.get_source (), shell=True,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE)
+        command_event = base_event.copy ()
+        command_event.command_id = command.id
 
-            for line in iter (process.stdout.readline, ''):
-                stdout_details = start_details.copy ()
-                stdout_details.update ({ 'stdout': line })
-                socket.emit ('stdout', stdout_details)
+        event_start = command_event.copy ()
+        event_start.start_at = millis ()
+        emit_event ('command-start', event_start)
+        command.start_at = event_start.start_at
 
-                command.output = line if not command.output else command.output + line
+        process = AsyncProcess (command.get_source ())
+        (o, e) = process.run ()
 
-            for line in iter (process.stderr.readline, ''):
-                stderr_details = start_details.copy ()
-                stderr_details.update ({ 'stderr': line })
-                socket.emit ('stderr', stderr_details)
-                # time.sleep(.3)
+        while process.is_running ():
+            # get all stdout lines and emit them
+            lines = []
+            while not o.empty ():
+                lines.append ({ 'type': 'stdout', 'line': o.get () })
 
-                command.error = line if not command.error else command.error + line
+            if lines:
+                output_event = command_event.copy ()
+                output_event.output = lines
+                emit_event ('command-output', output_event)
+                command.outputLines.extend (lines)
 
-            print process.wait()
+            # get all stderr lines and emit them
+            lines = []
+            while not e.empty ():
+                lines.append ({ 'type': 'stderr', 'line': e.get () })
 
-            end_details = start_details.copy ()
-            end_details.update ({ 'end_at': millis (), 'exit_code': process.returncode });
-            socket.emit ('command-end', end_details)
+            if lines:
+                output_event = command_event.copy ()
+                output_event.output = lines
+                emit_event ('command-output', output_event)
+                command.outputLines.extend (lines)
 
-            command.duration = end_details['end_at'] - start_details['start_at']
-            command.exit_code = process.returncode
-            time.sleep (0.1)
+            time.sleep (0.3)
 
-            transaction.commit ()
+        exit_code = process.wait ()
 
-            # emit ('debug', message);
+        event_end = event_start.copy ()
+        event_end.exit_code = exit_code
+        event_end.duration = millis () - event_end.start_at
+        emit_event ('command-end', event_end)
 
-            # emit ('city', { 'city': escape (current_user.username + ": " + message['city']) })
-            # city = message['city']
-            #
-            # conference = db.conference.get (city)
-            #
-            # if conference is None:
-            # print 'creating new conference'
-            # new_conference = Conference ()
-            # new_conference.city = city
-            # new_conference.users.append (current_user.username)
-            # # commit changes
-            #     db.conference.insert (city, new_conference)
-            #     transaction.commit ()
-            # else:
-            #     print 'updating conference'
-            #     conference.users.append (current_user.username)
-            #     # commit changes
-            #     transaction.commit ()
-            #
-            # for c in db.conference.items ():
-            #     msg = c[1].get_info ()
-            #     emit ('city', { 'city': msg })
+        command.duration = event_end.duration
+        command.exit_code = exit_code
+
+        worst_exit_code = max (worst_exit_code, exit_code)
+
+    script.exit_code = worst_exit_code
+    script.duration = millis () - script.start_at
+    transaction.commit ()

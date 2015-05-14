@@ -5,7 +5,7 @@ import functools, ZODB.FileStorage, ZODB.DB
 import json, time
 from flask import Flask, request, render_template, url_for, g, redirect, Response, Blueprint
 from flask_login import current_user
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from datetime import datetime
 
 from pyrest.server.auth import Auth
@@ -163,7 +163,15 @@ start_time = time.time ()
 
 def millis (since_start=False):
     dt = time.time () - start_time if since_start else time.time ()
-    return int(dt * 1000)
+    return int (dt * 1000)
+
+
+def emit_event (event, data, delay=0.1):
+    # print 'emitting: {} {}'.format (event, str (data))
+    emit (event, data)
+    if delay:
+        time.sleep (delay)
+
 
 # build blueprints
 _jobs_ = Blueprint ('jobs', __name__, template_folder='templates')
