@@ -31,98 +31,111 @@
   </script>
 
   <script type="text/template" id="job-peek-template">
-    <li>
-      <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>" data-job-id="<%= id %>"
-         class="job-link panel panel-default list-group-item list-group-item-default">
-        <div class="panel-body">
-          <h3><small>{'{ .username|e }} / </small> <%= name %></h3>
-          <p class="pull-right">#<%= scripts.length %></p>
-        </div>
-      </a>
-    </li>
+    <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>" data-job-id="<%= id %>"
+       class="job-link panel panel-default list-group-item list-group-item-default">
+      <div class="panel-body">
+        <h3><small>{'{ .username|e }} / </small> <%= name %></h3>
+        <p class="pull-right">#<%= scripts_id.length %></p>
+      </div>
+    </a>
   </script>
 
   <script type="text/template" id="job-template">
     <div class="job-content panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title"><%= name %>
+        <h3 class="panel-title">
+          <%= name %>
           <small> <%= id %></small>
         </h3>
       </div>
       <div class="panel-body">
-
-        <% var i = 0; _.each(scripts, function(script) { i++; %>
-        <ul>
-          <li class="script" id="script_<%= script.id %>">
-            <h4>Script <%= i %></h4>
-            <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= script.id %>">
-              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-              <% if (script.exit_code === 666) { %>
-                Run script
-              <% } else { %>
-               Rerun script
-              <% } %>
-            </a>
-
-            <div class="script-info">
-              <span class="glyphicon glyphicon-tag info-icon" aria-hidden="true"></span>
-              <span class="info-name">Result: </span>
-              <span class=" info-value"><%= script.result %></span>
-
-              <span class="glyphicon glyphicon-time info-icon" aria-hidden="true"></span>
-              <span class="info-name">Duration: </span>
-              <span class=" info-value"><%= script.duration %></span>
-
-              <span class="glyphicon glyphicon-calendar info-icon" aria-hidden="true"></span>
-              <span class="info-name">Finished: </span>
-              <span class="info-value"><%= script.timestamp %></span>
-            </div>
-
-            <ol class="command">
-              <% _.each(script.commands, function(command) { %>
-
-              <% if (!!command.source_code.trim()) { %>
-                <% if (command.hasData) { %>
-                  <li class="collapsible-command" id="command_<%= command.id %>">
-                <% } else { %>
-                  <li class="non-collapsible-command" id="command_<%=  command.id %>">
-                <% } %>
-
-
-                  <code class="source"><%= command.source_code %></code>
-
-                  <% if (command.exitCodeRepr) { %>
-                    <code class="info pull-right exit-info"><%= command.exitCodeRepr %></code>
-                  <% } else { %>
-                    <code class="info pull-right exit-info hidden" />
-                  <% } %>
-
-                  <% if (command.durationRepr) { %>
-                    <code class="info pull-right duration-info"><%= command.durationRepr %></code>
-                  <% } else { %>
-                    <code class="info pull-right duration-info hidden" />
-                  <% } %>
-                </li>
-
-                <div class="collapsible-closed stdout-stderr">
-                  <% if (command.outputLines.length) { %>
-                    <pre class="text-info command-output">
-                        <% _.each(command.outputLines, function (value, index) { %>
-                          <li class="command-output-<%= value.type %>"><%= value.line %></li>
-                        <% }); %>
-                    </pre>
-                  <% } else { %>
-                    <pre class="text-info command-output hidden" />
-                  <% } %>
-                </div>
-              <% } %>
-              <% }); %>
-            </ol>
-          </li>
-        </ul>
-        <% }); %>
+        <div class="job-scripts">
+          <!-- script template -->
+        </div>
       </div>
     </div>
+  </script>
+
+  <script type="text/template" id="script-template">
+    <div id="script_<%= id %>">
+      <h4>Script</h4>
+      <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= id %>">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        <% if (exit_code === 666) { %>
+          Run script
+        <% } else { %>
+         Rerun script
+        <% } %>
+      </a>
+
+      <div class="script-info">
+        <% if (exitCodeRepr) { %>
+          <span class="glyphicon glyphicon-tag info-icon" aria-hidden="true"></span>
+          <span class="info-name">Result: </span>
+          <span class=" info-value"><%= exitCodeRepr %></span>
+        <% } %>
+
+        <% if (durationRepr) { %>
+          <span class="glyphicon glyphicon-time info-icon" aria-hidden="true"></span>
+          <span class="info-name">Duration: </span>
+          <span class=" info-value"><%= durationRepr %></span>
+        <% } %>
+
+        <% if (startAtRepr) { %>
+          <span class="glyphicon glyphicon-calendar info-icon" aria-hidden="true"></span>
+          <span class="info-name">Finished: </span>
+          <span class="info-value"><%= startAtRepr %></span>
+        <% } %>
+
+        <% if (!exitCodeRepr) { %>
+          <span class="glyphicon glyphicon-info-sign info-icon" aria-hidden="true"></span>
+          <span class="info-name">No results: </span>
+          <span class="info-value">Script has not run yet!</span>
+
+        <% } %>
+      </div>
+
+      <ol class="script-commands">
+        <!-- command template -->
+      </ol>
+    </div>
+  </script>
+
+  <script type="text/template" id="command-template">
+    <% if (!!source_code.trim()) { %>
+      <% if (hasData) { %>
+        <li class="collapsible-command" id="command_<%= id %>">
+      <% } else { %>
+        <li class="non-collapsible-command" id="command_<%=  id %>">
+      <% } %>
+
+        <code class="source"><%= source_code %></code>
+
+        <% if (exitCodeRepr) { %>
+          <code class="info pull-right exit-info"><%= exitCodeRepr %></code>
+        <% } else { %>
+          <code class="info pull-right exit-info hidden" />
+        <% } %>
+
+        <% if (durationRepr) { %>
+          <code class="info pull-right duration-info"><%= durationRepr %></code>
+        <% } else { %>
+          <code class="info pull-right duration-info hidden" />
+        <% } %>
+      </li>
+
+      <div class="collapsible-closed stdout-stderr">
+        <% if (outputLines.length) { %>
+          <pre class="text-info command-output">
+              <% _.each(outputLines, function (value, index) { %>
+                <li class="command-output-<%= value.type %>"><%= value.line %></li>
+              <% }); %>
+          </pre>
+        <% } else { %>
+          <pre class="text-info command-output hidden" />
+        <% } %>
+      </div>
+    <% } %>
   </script>
 
 {% endblock %}
@@ -140,6 +153,8 @@
 
   <!-- views -->
   <script src="/static/js/backbone/views/job-view.js"></script>
+  <script src="/static/js/backbone/views/script-view.js"></script>
+  <script src="/static/js/backbone/views/command-view.js"></script>
   <script src="/static/js/backbone/views/job-peek-view.js"></script>
   <script src="/static/js/backbone/views/app-view.js"></script>
 

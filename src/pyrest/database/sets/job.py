@@ -67,14 +67,17 @@ class Job (persistent.Persistent):
         return self.__repr__ ()
 
     def as_dict (self, peek=False):
-        return dict (
+        d = dict (
             id=self.id,
             name=self.name, status=self.status,
             settings=dict (self.settings),
-            scripts=[script.as_dict () for script in self.get_scripts ()] if not peek else [script_id for script_id in
-                                                                                            self.scripts],
-            user=self.get_user ().as_dict ()
+            user=self.get_user ().as_dict (),
+            scripts_id=[script_id for script_id in self.scripts]
         )
+
+        if not peek:
+            d['scripts'] = [script.as_dict () for script in self.get_scripts ()]
+        return d
 
 
 class JobManagementApplication (BTreeEx):

@@ -1,23 +1,18 @@
 .container-fluid {
     margin-right: auto;
     margin-left: auto;
-    max-width: 1000px; /* or 950px */
+    max-width: 1050px;
 }
 
 .jumbotron p {
     font-size: 14px;
 }
 
-.table .table-field-id {
-    margin: 0;
-    text-align: center;
-    width: 36px;
-}
-
 .debug {
     border: 1px solid red;
 }
 
+/* job list */
 .job-list h3 {
     display: inline;
 }
@@ -56,7 +51,10 @@
     border-bottom: none;
 }
 
-.job-list .job-link, .job-list .job-link:hover {
+
+
+/* job peek */
+#job-list .job-link, #job-list .job-link:hover {
     text-decoration: none;
     color: inherit;
 }
@@ -66,26 +64,17 @@
     color: inherit;
 }
 
+
 #job-list .selected {
     background: #777 !important;
     color: #EEE !important;
 }
+
 #job-list .selected small {
     color: #FFF !important;
 }
 
-#todo-list input.edit {
-    display: none; /* Hides input box*/
-}
-
-#todo-list .editing label {
-    display: none; /* Hides label text when .editing*/
-}
-
-#todo-list .editing input.edit {
-    display: inline; /* Shows input text box when .editing*/
-}
-
+/* script */
 .script .info-name {
     font-weight: bold;
 }
@@ -113,35 +102,39 @@
     margin: 20px 0 10px;
 }
 
-.script .command .running:before {
-    background: #8C8;
-    color: #FFF;
+
+/* command */
+.script-commands .running:before {
+    background: #72A172;
+    color: #FFF !important;
 }
 
-.command .queued {
+.script-commands .queued {
     opacity: 0.5;
 }
 
-.command {
+.script-commands {
     counter-reset: line-numbering;
+    clear: right;
 }
 
-.command>li:hover {
+.script-commands>div>li:hover {
     background: #DDD;
 }
 
-.command>li, .command .stdout-stderr {
+.script-commands>div>li, .script-commands .stdout-stderr {
     list-style: none;
     margin: 0;
     padding: 0;
     background: #EEE;
+    /* line-height: 20px; */
 }
 
-.command .stdout-stderr {
+.script-commands .stdout-stderr {
     background: #FFF;
 }
 
-.command li:before {
+.script-commands li:before {
     content: counter(line-numbering);
     counter-increment: line-numbering;
     padding-right: 10px;
@@ -151,7 +144,7 @@
     min-width: 40px;
 }
 
-.command li .source, .command li .info {
+.script-commands li .source, .script-commands li .info {
     display: inline-block;
     height: 28px;
     line-height: 28px;
@@ -160,7 +153,7 @@
 }
 
 
-.command li .info {
+.script-commands li .info {
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 0.7em;
     height: 24px;
@@ -171,27 +164,29 @@
     margin: 2px 5px 2px 0;
 }
 
-.command li .exit-info {
+.script-commands li .exit-info {
     background: #D9534F;
     color: #FFF;
     font-weight: bold;
 }
 
-.command .non-collapsible-command:before {
+.script-commands .non-collapsible-command:before {
 
 }
 
-.command code.source:before {
+.script-commands code.source:before {
   content: " > ";
   color: #AAA;
 }
 
-.command .collapsible-command:before {
+.script-commands .collapsible-command:before, .script-commands .non-collapsible-command:before {
     border-left:  5px solid #666;
     color: #AAA;
+    font-size: 12px;
+    line-height: 24px;
 }
 
-.command .stdout-stderr pre {
+.script-commands .stdout-stderr pre {
     display: block;
     border: none;
     padding: 5px;
@@ -201,18 +196,17 @@
     white-space: nowrap;
 }
 
-.command .stdout-stderr .command-output-stderr {
+.script-commands .stdout-stderr .command-output-stderr {
     border-left: 5px solid #F58C8C;
     background: #F7E8E8;
     color: #c7254e;
 }
 
-.command .stdout-stderr .command-output-stdout {
+.script-commands .stdout-stderr .command-output-stdout {
     border-left: 5px solid #62c32a;
     background: #e8f7d9;
     color: #4e8822;
 }
-
 
 .collapsible-closed {
     display: none;

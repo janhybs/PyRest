@@ -18,8 +18,11 @@ var app = app || {};
         initialize: function () {
             this.$loading = this.$ ('.job-loading');
             this.$content = this.$ ('.job-content');
-
+//
             this.model.on ('change', this.onChange, this);
+//            this.listenTo (this.model.scripts, 'add', this.addOne);
+			this.listenTo (this.model.scripts, 'reset', this.addAll);
+
             this.listenTo (app.appSocket, 'socket-event', this.onSocketEvent);
         },
         events: {
@@ -35,6 +38,7 @@ var app = app || {};
                 case 'command-start':
                     $code.removeClass ('queued');
                     $li.addClass ('running');
+                    $li.next().find('.command-output').html('');
                     break;
 
                 case 'command-end':
@@ -72,21 +76,17 @@ var app = app || {};
         },
 
         render: function () {
-            if (this.model.isLoading)
-                return this.$el.html (this.messageTemplate ({message: 'Loading job details', type: 'info'}));
-
-            if (this.model.isBroken)
-                return this.$el.html (this.messageTemplate ({message: 'No such job', type: 'danger'}));
-
-            if (this.model.id == "")
-                return this.$el.html ('');
+            debug ('render job-view');
 
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
+            this.$scripts = this.$ ('.job-scripts');
 
+            this.addAll ();
             return this;
         },
 
         onChange: function () {
+            debug ('onChange job-view model');
             this.render();
             return this;
         },
@@ -98,42 +98,21 @@ var app = app || {};
         runScript: function (ev) {
             var script_id = $(ev.currentTarget).data ('script-id');
             var job_id = this.model.id;
-            $('#script_'.concat (script_id).concat (' .command .source')).addClass ('queued');
+            $('#script_'.concat (script_id).concat (' .script-commands .source')).addClass ('queued');
             $('#script_'.concat (script_id).concat (' .stdout-stderr pre')).html('');
             app.appSocket.sendRunScriptRequest (job_id, script_id);
         },
 
-        //createTodoOnEnter: function(e){
-        //    if ( e.which !== 13 || !this.input.val().trim() ) { // ENTER_KEY = 13
-        //        return;
-        //    }
-        //    app.todoList.create(this.newAttributes());
-        //    this.input.val(''); // clean input box
-        //},
-        //addOne: function(todo){
-        //    var view = new app.TodoView({model: todo});
-        //    $('#todo-list').append(view.render().el);
-        //},
-        //addAll: function(){
-        //    this.$('#todo-list').html(''); // clean the todo list
-        //    // filter todo item list
-        //    switch(window.filter){
-        //        case 'pending':
-        //            _.each(app.todoList.remaining(), this.addOne);
-        //            break;
-        //        case 'completed':
-        //            _.each(app.todoList.completed(), this.addOne);
-        //            break;
-        //        default:
-        //            app.todoList.each(this.addOne, this);
-        //            break;
-        //    }
-        //},
-        //newAttributes: function(){
-        //    return {
-        //        title: this.input.val().trim(),
-        //        completed: false
-        //    }
-        //}
+
+		addOne: function (script) {
+			var view = new app.ScriptView({ model: script });
+			this.$scripts.append(view.render().el.innerHTML);
+		},
+
+		addAll: function () {
+		    debug ('adding scripts');
+			this.$scripts.html('');
+			this.model.scripts.each (this.addOne, this);
+		},
     });
 }) (jQuery);

@@ -24,7 +24,7 @@ var app = app || {};
 		},
 
         updateStyles: function (current_id) {
-            debug ('updating styles');
+//            debug ('updating styles');
             this.current_id = current_id;
 
             $(".job-link").removeClass('selected');
@@ -35,7 +35,7 @@ var app = app || {};
 		// collection, when items are added or changed. Kick things off by
 		// loading any preexisting todos that might be saved in *localStorage*.
 		initialize: function () {
-		    debug ('init app view')
+//		    debug ('init app view')
 
 		    var that = this;
 //			this.allCheckbox = this.$('#toggle-all')[0];
@@ -55,10 +55,10 @@ var app = app || {};
 			// from being re-rendered for every model. Only renders when the 'reset'
 			// event is triggered at the end of the fetch.
 
-            debug ('fetching job-list...')
+//            debug ('fetching job-list...')
 			app.jobs.fetch({reset: true,
 			    success: function() {
-                    debug ('fetch job-list ok')
+//                    debug ('fetch job-list ok')
 			        // check jobs obtained
 			        if (app.jobs.length == 0) {
 			            // no jobs found, create one
@@ -80,14 +80,14 @@ var app = app || {};
 		},
 
         onJobIdChange: function (job_id) {
-            debug ('onJobIdChange ' + job_id);
+//            debug ('onJobIdChange ' + job_id);
             this.updateStyles (job_id);
         },
 
 		// Re-rendering the App just means refreshing the statistics -- the rest
 		// of the app doesn't change.
 		render: function () {
-		    debug ('render app');
+//		    debug ('render app');
 		    if (app.jobs.length == 0) {
 		        this.$el.html (this.noJobsTemplate ({  }));
 		        app.jobView.render ();
@@ -123,7 +123,7 @@ var app = app || {};
 
 		// Add all items in the **Todos** collection at once.
 		addAll: function () {
-		    debug ('adding jobs')
+//		    debug ('adding jobs')
 			this.$list.html('');
 			app.jobs.each(this.addOne, this);
 		},

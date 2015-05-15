@@ -16,7 +16,7 @@ $ (function () {
         loadJob: function(job_id, page) {
             this.job_id = job_id;
 
-            debug ('triggering');
+//            debug ('triggering');
             this.trigger('jobIdChange', this.job_id);
 
             app.job.id = job_id

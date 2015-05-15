@@ -21,15 +21,21 @@ var app = app || {};
             user: {}
         },
 
-        parse: function (response) {
-
-        // detect broken link and return 'broken' model for view to show
-            if (_.has (response, "scripts")) {
-                this.scripts = new app.ScriptCollection (response.scripts, {parse: true});
-                delete response.scripts;
-            } else {
+        initialize: function () {
+            if (!this.scripts)
                 this.scripts = new app.ScriptCollection ([], {parse: true});
+        },
+
+        parse: function (response) {
+            // force initialization
+            if (!this.scripts)
+                this.initialize ();
+
+            if (_.has (response, "scripts")) {
+                this.scripts.reset (response.scripts, {parse: true});
+                delete response.scripts;
             }
+
             return response;
         },
         toJSON: function () {
@@ -47,18 +53,25 @@ var app = app || {};
             duration: null
         },
 
+        initialize: function () {
+            this.commands = new app.CommandCollection (this.list ? this.list : [], {parse: true});
+        },
+
         parse: function (response) {
-            if (_.has (response, "commands")) {
-                this.commands = new app.CommandCollection (response.commands, {
-                    parse: true
-                });
+           if (_.has (response, "commands")) {
+                this.list = response.commands;
                 delete response.commands;
             }
+
+
             return response;
         },
         toJSON: function () {
             var json = _.clone (this.attributes);
             json.commands = this.commands ? this.commands.toJSON () : [];
+            json.startAtRepr = json.start_at ? new Date(json.start_at) : false;
+            json.durationRepr = json.duration ? (json.duration/1000.0).toString().concat(' ms') : false;
+            json.exitCodeRepr = json.exit_code != 666 ? json.exit_code.toString() : false;
             return json;
         }
     });
@@ -71,6 +84,10 @@ var app = app || {};
             errorLines: [],
             exit_code: null,
             source_code: null
+        },
+
+        isValid: function () {
+            return this.get('source_code').trim().length > 0;
         },
 
         parse: function (response) {
