@@ -12,7 +12,7 @@ from pyrest.server.auth import Auth
 from pyrest.server.configuration import Configuration
 
 app = Flask (__name__)
-app.config['SECRET_KEY'] = 'secretcacas!'
+app.config['SECRET_KEY'] = 'not really secret key'
 socket = SocketIO (app)
 auth = Auth (app)
 
