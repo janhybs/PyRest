@@ -57,17 +57,7 @@
   </script>
 
   <script type="text/template" id="script-template">
-    <div id="script_<%= id %>">
-      <h4>Script</h4>
-      <a type="button" class="btn btn-danger pull-right run-script" data-script-id="<%= id %>">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-        <% if (exit_code === 666) { %>
-          Run script
-        <% } else { %>
-         Rerun script
-        <% } %>
-      </a>
-
+    <article id="script_<%= id %>" class="script">
       <div class="script-info">
         <% if (exitCodeRepr) { %>
           <span class="glyphicon glyphicon-tag info-icon" aria-hidden="true"></span>
@@ -98,15 +88,47 @@
       <ol class="script-commands">
         <!-- command template -->
       </ol>
-    </div>
+
+      <header class="script-details">
+        <a type="button" class="btn btn-danger run-script" data-script-id="<%= id %>">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+          <% if (exit_code === 666) { %>
+            Run script
+          <% } else { %>
+            Rerun script
+          <% } %>
+        </a>
+
+        <a type="button" class="btn btn-warning edit-script" data-script-id="<%= id %>">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+          Edit script
+        </a>
+
+        <div class="progress hidden">
+          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+            <span class="sr-only">running</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="script-editable-commands hidden">
+        <textarea class="form-control" rows="<%= commands.length %>"><%= commandsRaw %></textarea>
+
+        <a type="button" class="btn btn-success save-changes">
+          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+          Save changes
+        </a>
+
+      </div>
+    </article>
   </script>
 
   <script type="text/template" id="command-template">
     <% if (!!source_code.trim()) { %>
       <% if (hasData) { %>
-        <li class="collapsible-command" id="command_<%= id %>">
+        <li class="command collapsible-command" id="command_<%= id %>">
       <% } else { %>
-        <li class="non-collapsible-command" id="command_<%=  id %>">
+        <li class="command non-collapsible-command" id="command_<%=  id %>">
       <% } %>
 
         <code class="source"><%= source_code %></code>
