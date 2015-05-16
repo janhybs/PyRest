@@ -74,7 +74,29 @@
     color: #FFF !important;
 }
 
+.disabled {
+    opacity: .5;
+}
 /* script */
+
+.script .script-details{
+    margin-top: 10px;
+}
+
+.script-details .progress {
+    clear: both;
+}
+
+.script-details .progress {
+    height: 8px;
+    margin-top: 10px;
+
+}
+
+.script-details .progress-bar {
+    transition: width .3s ease;
+}
+
 .script .info-name {
     font-weight: bold;
 }
@@ -91,17 +113,26 @@
 }
 
 .script {
-    margin: 20px 0 10px;
-    clear: right;
-}
-.script h4 {
-    display: inline-block;
+    margin: 0 0 50px;
 }
 
 .script-info {
     margin: 20px 0 10px;
 }
 
+.script-commands, .script-info {
+    clear: both;
+}
+
+.script .script-editable-commands textarea {
+    font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+    line-height: 28px;
+    font-size: 12px;
+}
+
+.script .script-editable-commands .save-changes {
+    margin-top: 10px;
+}
 
 /* command */
 .script-commands .running:before {
@@ -179,8 +210,12 @@
   color: #AAA;
 }
 
-.script-commands .collapsible-command:before, .script-commands .non-collapsible-command:before {
+.script-commands .collapsible-command:before {
     border-left:  5px solid #666;
+}
+
+.script-commands .collapsible-command:before, .script-commands .non-collapsible-command:before {
+
     color: #AAA;
     font-size: 12px;
     line-height: 24px;

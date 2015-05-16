@@ -22,8 +22,7 @@ var app = app || {};
         },
 
         initialize: function () {
-            if (!this.scripts)
-                this.scripts = new app.ScriptCollection ([], {parse: true});
+            this.scripts = new app.ScriptCollection (this.list ? this.list : [], {parse: true});
         },
 
         parse: function (response) {
@@ -32,8 +31,15 @@ var app = app || {};
                 this.initialize ();
 
             if (_.has (response, "scripts")) {
-                this.scripts.reset (response.scripts, {parse: true});
+                this.list = response.scripts;
+                this.list.sort(function (a, b) {
+                    return a.start_at - b.start_at;
+                });
                 delete response.scripts;
+
+
+                if (this.scripts)
+                    this.scripts.reset (this.list, {parse: true});
             }
 
             return response;
@@ -46,10 +52,14 @@ var app = app || {};
     });
 
     app.Script = Backbone.Model.extend ({
+
+        // load data
+        urlRoot: '/api/scripts/',
+
         defaults: {
             id: '',
             exit_code: null,
-            start_at: null,
+            start_at: 0,
             duration: null
         },
 
@@ -58,20 +68,26 @@ var app = app || {};
         },
 
         parse: function (response) {
-           if (_.has (response, "commands")) {
+            if (_.has (response, "commands")) {
                 this.list = response.commands;
                 delete response.commands;
-            }
 
+                if (this.commands)
+                    this.commands.reset (this.list, {parse: true});
+            }
 
             return response;
         },
         toJSON: function () {
             var json = _.clone (this.attributes);
             json.commands = this.commands ? this.commands.toJSON () : [];
-            json.startAtRepr = json.start_at ? new Date(json.start_at) : false;
-            json.durationRepr = json.duration ? (json.duration/1000.0).toString().concat(' ms') : false;
-            json.exitCodeRepr = json.exit_code != 666 ? json.exit_code.toString() : false;
+            json.startAtRepr = json.start_at ? formatDate (json.start_at) : false;
+            json.durationRepr = json.duration ? (json.duration / 1000.0).toString ().concat (' ms') : false;
+            json.exitCodeRepr = json.exit_code !== null && json.exit_code != 666 ? json.exit_code.toString () : false;
+            json.commandsRaw = '';
+            _.each (json.commands, function (command) {
+                json.commandsRaw += command.source_code + '\n';
+            });
             return json;
         }
     });
@@ -87,7 +103,7 @@ var app = app || {};
         },
 
         isValid: function () {
-            return this.get('source_code').trim().length > 0;
+            return this.get ('source_code').trim ().length > 0;
         },
 
         parse: function (response) {
@@ -97,7 +113,7 @@ var app = app || {};
             var json = _.clone (this.attributes);
 
             json.hasData = (json.errorLines.length + json.outputLines.length) > 0;
-            json.durationRepr = json.duration > 200 ? json.duration + ' ms' : false;
+            json.durationRepr = json.duration > 200 ? json.duration + ' s' : false;
             json.exitCodeRepr = json.exit_code !== null && json.exit_code != 0 ? 'exit: ' + json.exit_code : false;
             return json;
         }
