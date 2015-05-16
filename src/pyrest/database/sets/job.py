@@ -84,14 +84,10 @@ class JobManagementApplication (BTreeEx):
     def add_default (self):
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
         script = ScriptManagementApplication.create (job_id=job.id,commands=
-            """ping -c 4 www.tul.cz
-            echo 'foo'
-            ls
-            ls -la
-            sleep 1
-            java -versioncas
-            java -version 2>&1
-            java -version
+            """
+java -versioncas
+java -version 2>&1
+java -version
             """)
 
         job.add_script (script)
@@ -100,7 +96,8 @@ class JobManagementApplication (BTreeEx):
 
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 2")
         script = ScriptManagementApplication.create (job_id=job.id, commands=
-        """echo 'uname'
+        """ping -c 4 www.tul.cz
+        echo 'uname'
         uname -a
 
         sleep 1
