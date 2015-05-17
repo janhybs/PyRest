@@ -166,7 +166,7 @@ def millis (since_start=False):
     return int (dt * 1000)
 
 
-def emit_event (event, data, delay=0.1):
+def emit_event (event, data, delay=0):
     # print 'emitting: {} {}'.format (event, str (data))
     emit (event, data)
     if delay:

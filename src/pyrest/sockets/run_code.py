@@ -1,13 +1,9 @@
 # encoding: utf-8
 # author:   Jan Hybs
-from flask_login import current_user
-from flask_socketio import emit
 import time
 import transaction
 
 from pyrest import app, socket, auth, database, authenticated_only, db, millis, emit_event
-from flask import redirect
-import subprocess
 from pyrest.database.sets.script import ScriptExitCode
 from pyrest.server.dotdict import DotDict
 from pyrest.sockets.async import AsyncProcess
@@ -89,6 +85,8 @@ def socket_run_code_request (info):
                 emit_event ('command-output', command_output)
                 # add lines to command list
                 command.outputLines.extend (lines)
+
+            time.sleep (0.01)
 
         exit_code = process.wait ()
 
