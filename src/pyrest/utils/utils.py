@@ -51,5 +51,10 @@ start_time = time.time ()
 
 
 def millis (since_start=False):
+    """
+    function which returns current or relative timestamp based on given param
+    :param since_start:
+    :return:
+    """
     dt = time.time () - start_time if since_start else time.time ()
     return int (dt * 1000)

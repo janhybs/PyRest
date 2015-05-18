@@ -9,9 +9,7 @@ from pyrest.server.flask_utils import with_tittle
 @app.route ('/')
 @with_tittle ('PyRest::home')
 def main ():
+    """
+    Main view which shows almost nothing
+    """
     return render_template ('main.html')
-
-
-@app.route('/success', methods=['GET', 'POST'])
-def on_login ():
-    return 'foo'

@@ -13,6 +13,9 @@ from pyrest.server.flask_utils import with_tittle
 @_user_.route ("/sign-in/<redirect_url>", methods=['GET', 'POST'])
 @with_tittle ('Sign in')
 def sign_in (redirect_url):
+    """
+    form handler for logging
+    """
     form = SignInForm ()
     if form.validate_on_submit ():
         flash (u'Successfully logged in as %s' % form.username.data, category='success')
@@ -23,6 +26,9 @@ def sign_in (redirect_url):
 @_user_.route ("/sign-up", methods=['GET', 'POST'])
 @with_tittle ('Sign up')
 def sign_up ():
+    """
+    form handler for creating new user
+    """
     form = SignUpForm ()
     if form.validate_on_submit ():
         flash (u'Successfully registered as %s' % form.username.data, category='success')
@@ -32,5 +38,8 @@ def sign_up ():
 
 @_user_.route ("/sign_out")
 def sign_out ():
+    """
+    sign out user
+    """
     auth.logout_user ()
     return redirect (url_for ('main'))

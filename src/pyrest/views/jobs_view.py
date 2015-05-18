@@ -17,6 +17,9 @@ from pyrest.server.flask_utils import with_tittle
 @with_tittle ('New job')
 @authenticated_only
 def create_job ():
+    """
+    form handler for creating new job
+    """
     form = JobForm ()
     if form.validate_on_submit ():
         flash (u'Job successfully created', category='success')
@@ -26,6 +29,9 @@ def create_job ():
 
 @_jobs_.route ("/list")
 def list_jobs ():
+    """
+    shows page with all jobs created by current user
+    """
     return render_template ('list_jobs.html')
 
 
@@ -45,6 +51,10 @@ def api_get_job_by_id (job_id):
 @_api_.route ('/jobs')
 @json_response
 def api_get_jobs ():
+    """
+    api for jobs
+    :return:
+    """
     time.sleep(0.5)
     jobs = db.jobs.search (sort="name")
     joblist = [job.as_dict (peek=True) for job in jobs]
@@ -55,6 +65,11 @@ def api_get_jobs ():
 @_api_.route ('/scripts/', methods=['GET', 'POST', 'PUT', 'DELETE'], defaults={ 'script_id': '' })
 @json_response
 def api_scripts_by_id (script_id):
+    """
+    apii for scripts (creating, updating, and listing)
+    :param script_id:
+    :return:
+    """
     time.sleep(0.5)
     script = db.scripts.get (script_id)
 
@@ -85,8 +100,3 @@ def api_scripts_by_id (script_id):
         return script.as_dict ()
 
     return Response (status=404);
-
-
-@_jobs_.route ("/delete")
-def sign_out ():
-    return 'Foo'
