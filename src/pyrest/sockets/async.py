@@ -31,6 +31,9 @@ class AsyncReader (threading.Thread):
 
 
 class AsyncProcess (object):
+    """
+    Helper class which executed shell command and via two AsyncReader (for error and output) will offer results outputs
+    """
     def __init__ (self, command, shell=True):
         self.command = command
         self.shell = shell
@@ -44,7 +47,10 @@ class AsyncProcess (object):
 
 
     def run (self):
-        # run process
+        """
+        run process
+        :return: tuple of stdout_queue and stderr_queue Queue
+        """
         self.process = subprocess.Popen (self.command, shell=self.shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # prepare queues and returns it
@@ -60,6 +66,10 @@ class AsyncProcess (object):
         return self.stdout_queue, self.stderr_queue
 
     def wait (self):
+        """
+        join thread and waits until everything is done
+        :return:
+        """
         # check process existence
         if not self.process:
             raise
@@ -73,5 +83,8 @@ class AsyncProcess (object):
 
 
     def is_running (self):
+        """
+        :return: True if process has not ended yet
+        """
         return not self.stdout_reader.eof () or not self.stderr_reader.eof ()
 

@@ -6,7 +6,7 @@ import transaction
 from pyrest import app, socket, auth, database, db
 from pyrest.database.sets.script import ScriptExitCode
 from pyrest.server.dotdict import DotDict
-from pyrest.server.flask_utils import emit_event
+from pyrest.server.flask_utils import emit_event, authenticated_only
 from pyrest.sockets.async import AsyncProcess
 from pyrest.utils.utils import millis
 
@@ -22,9 +22,12 @@ def socket_disconnect ():
 
 
 @socket.on ('run-code')
-# @authenticated_only
+@authenticated_only
 def socket_run_code_request (info):
-    # emit ('debug', 'socket_run_code_request for "%"' % current_user.user.username)
+    """
+    :param info: handles request sent by user
+    :return:
+    """
 
     info = DotDict (info)
 
