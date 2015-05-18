@@ -16,6 +16,9 @@ from pyrest.database.sets.user import User
 
 
 class JobForm (Form):
+    """
+    Form for creating new Job
+    """
     name = StringField ('name', validators=[DataRequired ()])
     script = TextAreaField ('script', validators=[DataRequired ()])
 

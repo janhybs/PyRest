@@ -9,6 +9,9 @@ from pyrest import db, auth
 
 
 class SignInForm (Form):
+    """
+    Form for login
+    """
     username = StringField ('Username', validators=[DataRequired ()])
     password = PasswordField ('Password', validators=[DataRequired ()])
 

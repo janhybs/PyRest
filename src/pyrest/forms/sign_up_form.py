@@ -13,6 +13,9 @@ from pyrest.database.sets.user import User, UserManagementApplication
 
 
 class SignUpForm (Form):
+    """
+    Form for registration
+    """
     username = StringField ('Username', validators=[DataRequired ()])
     password = PasswordField ('Password', validators=[DataRequired ()])
     password_confirm = PasswordField ('Password confirm', validators=[
