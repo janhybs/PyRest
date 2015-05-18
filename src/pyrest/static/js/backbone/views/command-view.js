@@ -4,10 +4,10 @@ var app = app || {};
 (function ($) {
     'use strict';
 
-    // The Application
-    // ---------------
-
-    // renders the full list of todo items calling TodoView for each one.
+    /**
+     * Command view class which renders one command and ots details
+     * @type {void|*}
+     */
     app.CommandView = Backbone.View.extend ({
         tagName: 'div',
 
@@ -15,13 +15,16 @@ var app = app || {};
 
 
         initialize: function () {
-            //this.model.on ('change', this.render, this);
+            //this.model.on ('change', this.render, this); // too op
 
             this.listenTo (app.appSocket, 'command-start:' + this.model.id, this.onCommandStart);
             this.listenTo (app.appSocket, 'command-output:' + this.model.id, this.onCommandOutput);
             this.listenTo (app.appSocket, 'command-end:' + this.model.id, this.onCommandEnd);
         },
 
+        /**
+         * Method which destroys whole view and its children if any
+         */
         destroy: function () {
             this.remove ();
         },
@@ -30,15 +33,27 @@ var app = app || {};
             'click .collapsible-command': 'collapsibleClicked'
         },
 
+        /**
+         * Rendering this command
+         * @returns {app.CommandView}
+         */
         render: function () {
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
             return this;
         },
 
+        /**
+         * Method for opening closing commands output
+         * @param e
+         */
         collapsibleClicked: function (e) {
             this.$ ('.stdout-stderr').toggleClass ('collapsible-closed');
         },
 
+        /**
+         * scoket callback method which prepares command gui for run
+         * @param data socket event data
+         */
         onCommandStart: function (data) {
             // remove queue flag from code element
             this.$ ('.source').removeClass ('queued');
@@ -51,6 +66,10 @@ var app = app || {};
             this.model.set ({start_at: data.start_at});
         },
 
+        /**
+         * scoket callback method which completes command gui after execution is over
+         * @param data socket event data
+         */
         onCommandEnd: function (data) {
             var $li = this.$ ('.command');
 
@@ -68,6 +87,10 @@ var app = app || {};
             this.model.set ({exit_code: data.exit_code, duration: data.duration});
         },
 
+        /**
+         * scoket callback method which adds output lines when execution is in progress
+         * @param data socket event data
+         */
         onCommandOutput: function (data) {
             var $li = this.$ ('.command');
 

@@ -77,4 +77,7 @@ var app = app || {};
             return json;
         }
     });
+
+    // global instance of 'main job'
+    app.job = new app.Job ();
 }) ();

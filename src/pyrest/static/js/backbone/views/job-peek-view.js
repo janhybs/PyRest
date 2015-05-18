@@ -13,14 +13,21 @@ var app = app || {};
 
         jobTemplate: _.template ($ ('#job-peek-template').html ()),
 
+        /**
+         * Add listeners and auto render
+         */
         initialize: function () {
             this.model.on ('change', this.render, this);
             this.render ();
         },
+
         events: {
-//            'click .collapsible-command': 'collapsibleClicked'
         },
 
+        /**
+         * Rendering template
+         * @returns {app.JobPeekView}
+         */
         render: function () {
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
             return this;

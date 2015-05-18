@@ -23,11 +23,17 @@ var app = app || {};
             this.listenTo (app.appSocket, 'command-end', this.onCommandEnd);
         },
 
+        /**
+         * Method which destroys whole view and its children if any
+         */
         destroy: function () {
             this.remove ();
             this.destroyChildren ();
         },
 
+        /**
+         * Method which destroys views children if any
+         */
         destroyChildren: function () {
             _.each (this.commandViews, function (view) {
                 view.destroy ();
@@ -35,6 +41,7 @@ var app = app || {};
             this.commandViews = [];
         },
 
+        // bind events
         events: {
             'click .run-script': 'runScript',
             'click .edit-script': 'editScript',
@@ -42,6 +49,10 @@ var app = app || {};
         },
 
 
+        /**
+         * Method for rendering entire script along with comamnds
+         * @returns {app.ScriptView}
+         */
         render: function () {
             this.$el.html (this.jobTemplate (this.model.toJSON ()));
             this.$commands = this.$el.find ('.script-commands');
@@ -50,6 +61,10 @@ var app = app || {};
             return this;
         },
 
+        /**
+         * Method for rendering one CommandView
+         * @param script
+         */
         addOne: function (command) {
             if (!command.isValid ())
                 return this;
@@ -60,19 +75,30 @@ var app = app || {};
             return this;
         },
 
+        /**
+         * Method for rendering all CommandView
+         */
         addAll: function () {
             this.destroyChildren ();
             this.$commands.html ('');
             this.model.commands.each (this.addOne, this);
         },
 
-
+        /**
+         * Method which sends socket to server with request to run code
+         * Also prepares gui for run
+         * @param ev
+         */
         runScript: function (ev) {
             this.$ (' .script-commands .source').addClass ('queued');
             this.$ (' .stdout-stderr pre').html ('');
             app.appSocket.sendRunScriptRequest (this.model.id);
         },
 
+        /**
+         * Method which switches view to edit mode
+         * @param ev
+         */
         editScript: function (ev) {
             this.$ ('.script-commands').hidden ();
             this.$ ('.script-info').hidden ();
@@ -80,6 +106,11 @@ var app = app || {};
             this.$ ('.script-editable-commands').visible ();
         },
 
+        /**
+         * Method which saves changes and sends edits to server
+         * Also fetches new object
+         * @param ev
+         */
         saveChanges: function (ev) {
             this.$ ('.script-commands').visible ();
             this.$ ('.script-info').visible ();
@@ -131,10 +162,17 @@ var app = app || {};
 
         },
 
+        /**
+         * After changes are done sync is triggered which will re-render this view
+         */
         onSync: function () {
             this.render ();
         },
 
+        /**
+         * Method for rendering one ScriptView
+         * @param script
+         */
         onScriptStart: function (data) {
             this.$ ('.progress').removeClass ('hidden');
             this.$ ('.progress-bar').css ('width', '0%').attr ('aria-valuenow', 0);
