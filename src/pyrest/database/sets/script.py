@@ -13,6 +13,9 @@ from pyrest.database.sets.command import CommandManagementApplication
 
 
 class ScriptExitCode (object):
+    """
+    enum for exit codes
+    """
     _classes = ['default', 'success', 'warning', 'danger']
     _strings = ['No results', 'Success', 'Running', 'Error']
 
@@ -24,6 +27,9 @@ class ScriptExitCode (object):
 
 
 class Script (persistent.Persistent):
+    """
+    class representing list fo commands
+    """
     def __init__ (self):
         self.id = None
         self.job_id = None
@@ -34,6 +40,9 @@ class Script (persistent.Persistent):
 
 
     def copy (self):
+        """
+        :return: shallow copy
+        """
         script = Script()
         script.job_id = self.job_id
         script.start_at = self.start_at
@@ -47,12 +56,23 @@ class Script (persistent.Persistent):
 
 
     def get_commands (self):
+        """
+        :return: list of Command instances
+        """
         return [db.commands.get (command_id, None) for command_id in self.commands]
 
     def get_result_cls (self):
+        """
+        :return: css class for this instance result
+        :rtype str:
+        """
         return ScriptExitCode._classes[self.result]
 
     def get_result_str (self):
+        """
+        :return: str representation for this instance result
+        :rtype str:
+        """
         return ScriptExitCode._strings[self.result]
 
     def __repr__ (self):
@@ -65,6 +85,10 @@ class Script (persistent.Persistent):
         return self.__repr__ ()
 
     def as_dict (self):
+        """
+        :return: dict representation of this object
+        :rtype: dict
+        """
         return dict (
             id=self.id, job_id=self.job_id,
             start_at=int(self.start_at) if self.start_at else None, exit_code=self.exit_code,
@@ -75,7 +99,11 @@ class Script (persistent.Persistent):
 
 class ScriptManagementApplication (BTreeEx):
     @staticmethod
-    def create (*args, **kwargs):
+    def create (**kwargs):
+        """
+        :param kwargs:
+        :return: new instance of Script
+        """
         script = Script ()
         script.id = DBUtils.id (kwargs)
         script.job_id = kwargs.get ('job_id')

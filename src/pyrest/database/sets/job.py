@@ -1,6 +1,5 @@
 # encoding: utf-8
 # author:   Jan Hybs
-import uuid, time
 
 import persistent
 from persistent.list import PersistentList
@@ -12,15 +11,9 @@ from pyrest.database.dbutils import DBUtils
 from pyrest.database.sets.script import ScriptManagementApplication, ScriptExitCode
 
 
-class JobStatus (object):
-    not_created = 0
-    running = 1
-    success = 2
-    error = 3
-    unknown = 4
-
-
 class Job (persistent.Persistent):
+    """ class representing several scripts
+    """
     def __init__ (self):
         self.id = None
         self.user_id = None
@@ -30,30 +23,58 @@ class Job (persistent.Persistent):
         self.scripts = PersistentList ()
 
     def get_scripts (self):
+        """
+        :return: list of Script objects
+        """
         return [db.scripts.get (script_id, None) for script_id in self.scripts]
 
     def add_script (self, script):
+        """
+        adds Script to internal list of scripts
+        :param script: Script
+        :return: None
+        """
         self.scripts.append (script.id)
 
 
     def get_user (self):
+        """
+        :return: User object, creator of this job
+        """
         return db.users.get (self.user_id)
 
 
     def get_script_at (self, position=-1):
+        """
+        :param position:
+        :return: Script or None
+        :rtype Script:
+        """
         try:
             return db.scripts.get (self.scripts[position])
         except:
             return None
 
     def script (self):
+        """
+        :return: current Script (last one)
+        :rtype Script:
+        """
         return self.get_script_at (-1)
 
 
     def get_result_cls (self):
+        """
+        :return: css class for this instance result
+        :rtype str:
+        """
         return self.script ().get_result_cls () if self.scripts else 'default'
 
     def get_result_str (self):
+        """
+        :return: str representation for this instance result
+        :rtype str:
+        """
         return self.script ().get_result_str () if self.scripts else 'No results'
 
 
@@ -67,6 +88,11 @@ class Job (persistent.Persistent):
         return self.__repr__ ()
 
     def as_dict (self, peek=False):
+        """
+        :param peek: whether to load script from db
+        :return: dict representation of this object
+        :rtype: dict
+        """
         d = dict (
             id=self.id,
             name=self.name, status=self.status,
@@ -82,6 +108,9 @@ class Job (persistent.Persistent):
 
 class JobManagementApplication (BTreeEx):
     def add_default (self):
+        """
+        Add default values
+        """
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
         script = ScriptManagementApplication.create (job_id=job.id,commands=
             """
@@ -122,6 +151,12 @@ java -version
 
     @staticmethod
     def register (db, name, btree_cls):
+        """
+        register db root
+        :param db:
+        :param name:
+        :param btree_cls:
+        """
         if not hasattr (db, name):
             print 'no root "{:s}" found, creating'.format (name)
             instance = btree_cls ()
@@ -135,7 +170,7 @@ java -version
         job.name = kwargs.get ('name')
         job.user_id = kwargs.get ('user_id')
         job.scripts = kwargs.get ('scripts', PersistentList ())
-        job.status = kwargs.get ('status', JobStatus.unknown)
+        job.status = kwargs.get ('status', ScriptExitCode.unknown)
 
         return job
 

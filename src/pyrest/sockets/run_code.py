@@ -3,10 +3,12 @@
 import time
 import transaction
 
-from pyrest import app, socket, auth, database, authenticated_only, db, millis, emit_event
+from pyrest import app, socket, auth, database, db
 from pyrest.database.sets.script import ScriptExitCode
 from pyrest.server.dotdict import DotDict
+from pyrest.server.flask_utils import emit_event
 from pyrest.sockets.async import AsyncProcess
+from pyrest.utils.utils import millis
 
 
 @socket.on ('connect')

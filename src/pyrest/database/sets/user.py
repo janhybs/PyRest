@@ -12,6 +12,8 @@ from pyrest.server.auth import SessionUser
 
 
 class User (persistent.Persistent):
+    """ class representing user
+    """
     def __init__ (self):
         self.id = None
         self.username = None
@@ -19,9 +21,15 @@ class User (persistent.Persistent):
         self.jobs = PersistentList ()
 
     def create_session_user (self):
+        """
+        :return: instance of SessionUser created from this user
+        """
         return SessionUser (self, str (uuid.uuid1 ()))
 
     def get_jobs (self):
+        """
+        :return: list all job aval
+        """
         return [db.jobs.get (job_id, None) for job_id in self.jobs]
 
     def __repr__ (self):
@@ -34,6 +42,9 @@ class User (persistent.Persistent):
         return self.__repr__ ()
 
     def as_dict (self):
+        """
+        :return: dict repr
+        """
         return dict (
             id=self.id,
             username=self.username, password=self.password,
@@ -43,6 +54,9 @@ class User (persistent.Persistent):
 
 class UserManagementApplication (BTreeEx):
     def add_default (self):
+        """
+        :return: dummy instances of users
+        """
         u = User ()
         u.id = str (uuid.uuid1 ())
         u.username = 'Hans'
@@ -57,6 +71,12 @@ class UserManagementApplication (BTreeEx):
 
     @staticmethod
     def register (db, name, btree_cls):
+        """
+        :param db:
+        :param name:
+        :param btree_cls:
+        :return:
+         """
         if not hasattr (db, name):
             print 'no root "{:s}" found, creating'.format (name)
             instance = btree_cls ()
@@ -64,12 +84,16 @@ class UserManagementApplication (BTreeEx):
             instance.add_default ()
 
     @staticmethod
-    def create (*args, **kwargs):
+    def create (username=None, password=None, **kwargs):
+        """
+        :param username:
+        :param password:
+        :param kwargs:
+        :return: instance of User
+        """
         user = User ()
         user.id = DBUtils.id (kwargs)
-        user.username = kwargs.get ('username')
-        user.password = kwargs.get ('password')
+        user.username = username
+        user.password = password
 
         return user
-
-

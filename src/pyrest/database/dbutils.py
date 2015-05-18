@@ -9,6 +9,9 @@ class DBUtils (object):
 
     @staticmethod
     def unique_id ():
+        """
+        :return: unique incremented if debug os on or unique id based on time and machine otherwise
+        """
         if DBUtils.debug:
             DBUtils._id_count += 1
             return unicode ('py' + str (DBUtils._id_count))
@@ -17,5 +20,9 @@ class DBUtils (object):
 
     @staticmethod
     def id (kwargs={ }):
+        """
+        :param kwargs:
+        :return: extract id from given kwargs
+        """
         kwargs_id = kwargs.get ('id', None)
         return unicode (kwargs_id if kwargs_id is not None else DBUtils.unique_id ())

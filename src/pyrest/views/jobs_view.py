@@ -3,12 +3,14 @@
 from flask.templating import render_template
 import time
 
-from pyrest import app, socket, auth, database, templated, with_tittle, authenticated_only, db, json_response, _jobs_, \
+from pyrest import app, socket, auth, database,  db, _jobs_, \
     _api_
 from flask import redirect, Blueprint, flash, url_for, g, request, jsonify, Response
 from pyrest.database.sets.command import CommandManagementApplication
 from pyrest.forms.create_job_form import JobForm
 from pyrest.database.sets.script import ScriptExitCode, ScriptManagementApplication
+from pyrest.server.flask_utils import authenticated_only, json_response
+from pyrest.server.flask_utils import with_tittle
 
 
 @_jobs_.route ("/new", methods=['GET', 'POST'])

@@ -2,13 +2,11 @@
 # author:   Jan Hybs
 from flask.templating import render_template
 
-from pyrest import app, socket, auth, database, templated, with_tittle, _user_
+from pyrest import app, socket, auth, database, _user_
 from flask import redirect, Blueprint, flash, url_for
 from pyrest.forms.sign_in_form import SignInForm
 from pyrest.forms.sign_up_form import SignUpForm
-
-
-
+from pyrest.server.flask_utils import with_tittle
 
 
 @_user_.route ("/sign-in", methods=['GET', 'POST'], defaults={ 'redirect_url': 'main' })
