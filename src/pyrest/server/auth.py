@@ -7,6 +7,9 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, fla
 
 
 class Auth (object):
+    """
+    Class which handles auth process
+    """
     def __init__(self, app):
         """Static initialization"""
         self.app = app
@@ -37,6 +40,9 @@ class Auth (object):
 
 
 class SessionUser (UserMixin):
+    """
+    Simple class which serves as current_user in session
+    """
     def __init__(self, user, session_id):
         self.session_id = self.id = session_id
         self.user = user

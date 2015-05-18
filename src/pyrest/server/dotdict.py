@@ -2,6 +2,9 @@
 # author:   Jan Hybs
 
 class DotDict(dict):
+    """
+    Dictionary class with dot (.) access
+    """
     def __init__(self, *a, **kw):
         dict.__init__(self, *a, **kw)
 

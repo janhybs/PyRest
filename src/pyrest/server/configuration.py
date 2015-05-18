@@ -4,6 +4,9 @@ from optparse import OptionParser
 
 
 class Configuration (object):
+    """
+    class which holds global config
+    """
     instance = None
 
     def __init__ (self):
@@ -36,6 +39,10 @@ class Configuration (object):
 
     @staticmethod
     def get_instance ():
+        """
+        Singleton getter
+        :return: Configuration
+        """
         if Configuration.instance is None:
             Configuration.instance = Configuration ()
         return Configuration.instance

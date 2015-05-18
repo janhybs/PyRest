@@ -15,6 +15,11 @@ from pyrest.utils.utils import pretty_date
 #
 
 def authenticated_only (f):
+    """
+    :param f:
+    :return: Decorator which checks whether is given user authenticated
+    if not redirect will occur
+    """
     @functools.wraps (f)
     def wrapped (*args, **kwargs):
         if not current_user.is_authenticated ():
@@ -32,6 +37,11 @@ from flask import request, render_template, url_for
 
 
 def templated (template=None):
+    """
+    Decorator which renders template if no valid response is generated
+    :param template: name
+    :return:
+    """
     def decorator (f):
         @wraps (f)
         def decorated_function (*args, **kwargs):
@@ -53,6 +63,13 @@ def templated (template=None):
 
 
 def with_tittle (title, *args_, **kwargs_):
+    """
+    Decorator which sets global object's g tittle based on given attrs
+    :param title:
+    :param args_:
+    :param kwargs_:
+    :return:
+    """
     def decorator (f):
         @wraps (f)
         def decorated_function (*args, **kwargs):
@@ -64,42 +81,14 @@ def with_tittle (title, *args_, **kwargs_):
     return decorator
 
 
-#
-# injectors
-#
-
-
-@app.context_processor
-def inject_request_path_comparison ():
-    def match_location (id):
-        return request.path == url_for (id)
-
-    return dict (match_location=match_location)
-
-
-@app.context_processor
-def inject_get_title ():
-    def get_title ():
-        return g.get ('title', 'Python REST')
-
-    return dict (get_title=get_title)
-
-
-@app.context_processor
-def inject_preview_str ():
-    def str_preview (string, max=32):
-        return string if len (string) <= max else string[0:max] + '...'
-
-    return dict (str_preview=str_preview)
-
-
-
-@app.context_processor
-def inject_pretty_date ():
-    return dict (pretty_date=pretty_date)
-
 
 def json_response (f):
+    """
+    Decorator which expects function return value to be json serializable object
+    Decorator will then serialize this object to json format and sends response
+    :param f:
+    :return:
+    """
     @functools.wraps (f)
     def decorated_function (*args, **kwargs):
         result = f (*args, **kwargs)
@@ -110,12 +99,69 @@ def json_response (f):
     return decorated_function
 
 #
+# injectors
+#
+
+
+@app.context_processor
+def inject_request_path_comparison ():
+    """
+    Injects method for comparing current location
+    :return:
+    """
+    def match_location (id):
+        return request.path == url_for (id)
+
+    return dict (match_location=match_location)
+
+
+@app.context_processor
+def inject_get_title ():
+    """
+    Injects method for getting tittle from g object
+    :return:
+    """
+    def get_title ():
+        return g.get ('title', 'Python REST')
+
+    return dict (get_title=get_title)
+
+
+@app.context_processor
+def inject_preview_str ():
+    """
+    Injects method for shortening string if too long
+    :return:
+    """
+    def str_preview (string, max=32):
+        return string if len (string) <= max else string[0:max] + '...'
+
+    return dict (str_preview=str_preview)
+
+
+
+@app.context_processor
+def inject_pretty_date ():
+    """
+    Injects method for pretty date formatting
+    :return:
+    """
+    return dict (pretty_date=pretty_date)
+
+
+#
 # other
 #
 
 
 def emit_event (event, data, delay=0):
-    # print 'emitting: {} {}'.format (event, str (data))
+    """
+    Emits socket
+    :param event:
+    :param data:
+    :param delay:
+    :return:
+    """
     emit (event, data)
     if delay:
         time.sleep (delay)
