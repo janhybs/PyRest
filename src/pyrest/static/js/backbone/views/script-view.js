@@ -154,6 +154,6 @@ var app = app || {};
             var value = (++this.commandCompleted / this.commandViews.length) * 100;
             value = value > 100 ? 100 : value < 0 ? 0 : value;
             this.$ ('.progress-bar').css ('width', value + '%').attr ('aria-valuenow', value);
-        },
+        }
     });
 }) (jQuery);

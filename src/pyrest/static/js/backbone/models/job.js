@@ -6,10 +6,19 @@ var app = app || {};
     // Job Model
     // ----------
 
+
+    /**
+     * Job class
+     * defines object storing scripts. Each job belong to one user and can have multiple scripts associated with
+     * this instance
+     *
+     * script field is no accessible by standard 'get' method but simply by instance.script
+     *
+     */
     app.Job = Backbone.Model.extend ({
 
 
-        // load data
+        // default url on server for api requests
         urlRoot: '/api/jobs/',
 
         // Default attributes
@@ -21,10 +30,21 @@ var app = app || {};
             user: {}
         },
 
+        /**
+         * Create collection of Scripts upon init
+         */
         initialize: function () {
             this.scripts = new app.ScriptCollection (this.list ? this.list : [], {parse: true});
+            delete this.list;
         },
 
+        /**
+         * Post-parsing processing
+         *
+         * In this part script fields are converted to ScriptCollection and are deleted from response
+         * @param response
+         * @returns {Object}
+         */
         parse: function (response) {
             // force initialization
             if (!this.scripts)
@@ -44,85 +64,17 @@ var app = app || {};
 
             return response;
         },
+
+        /**
+         * Json serialization of this instance
+         *
+         * script fields is always present even if as emtpy array ([])
+         * @returns {Object}
+         */
         toJSON: function () {
             var json = _.clone (this.attributes);
             json.scripts = this.scripts ? this.scripts.toJSON () : [];
             return json;
         }
-    });
-
-    app.Script = Backbone.Model.extend ({
-
-        // load data
-        urlRoot: '/api/scripts/',
-
-        defaults: {
-            id: '',
-            exit_code: null,
-            start_at: 0,
-            duration: null
-        },
-
-        initialize: function () {
-            this.commands = new app.CommandCollection (this.list ? this.list : [], {parse: true});
-        },
-
-        parse: function (response) {
-            if (_.has (response, "commands")) {
-                this.list = response.commands;
-                delete response.commands;
-
-                if (this.commands)
-                    this.commands.reset (this.list, {parse: true});
-            }
-
-            return response;
-        },
-        toJSON: function () {
-            var json = _.clone (this.attributes);
-            json.commands = this.commands ? this.commands.toJSON () : [];
-            json.startAtRepr = json.start_at ? formatDate (json.start_at) : false;
-            json.durationRepr = json.duration ? (json.duration / 1000.0).toString ().concat (' ms') : false;
-            json.exitCodeRepr = json.exit_code !== null && json.exit_code != 666 ? json.exit_code.toString () : false;
-            json.commandsRaw = '';
-            _.each (json.commands, function (command) {
-                json.commandsRaw += command.source_code + '\n';
-            });
-            return json;
-        }
-    });
-
-    app.Command = Backbone.Model.extend ({
-        defaults: {
-            id: '',
-            duration: null,
-            outputLines: [],
-            errorLines: [],
-            exit_code: null,
-            source_code: null
-        },
-
-        isValid: function () {
-            return this.get ('source_code').trim ().length > 0;
-        },
-
-        parse: function (response) {
-            return response;
-        },
-        toJSON: function () {
-            var json = _.clone (this.attributes);
-
-            json.hasData = (json.errorLines.length + json.outputLines.length) > 0;
-            json.durationRepr = json.duration > 200 ? json.duration + ' s' : false;
-            json.exitCodeRepr = json.exit_code !== null && json.exit_code != 0 ? 'exit: ' + json.exit_code : false;
-            return json;
-        }
-    });
-
-    app.ScriptCollection = Backbone.Collection.extend ({
-        model: app.Script
-    });
-    app.CommandCollection = Backbone.Collection.extend ({
-        model: app.Command
     });
 }) ();

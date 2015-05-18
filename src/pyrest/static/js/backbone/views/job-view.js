@@ -68,6 +68,6 @@ var app = app || {};
             this.destroyChildren ();
             this.$scripts.html ('');
             this.model.scripts.each (this.addOne, this);
-        },
+        }
     });
 }) (jQuery);

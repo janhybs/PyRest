@@ -126,7 +126,7 @@ var app = app || {};
 //            debug ('adding jobs')
             this.$list.html('');
             app.jobs.each(this.addOne, this);
-        },
+        }
 
 //        filterOne: function (tovdo) {
 //            tovdo.trigger('visible');
