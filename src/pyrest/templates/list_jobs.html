@@ -49,6 +49,12 @@
         </h3>
       </div>
       <div class="panel-body">
+        <% if (scripts.length == 0) { %>
+          <div class="alert alert-danger">
+            So far, no script were created for this <strong>Job</strong> (or perhaps all of them was removed).
+            But you can simple <strong><a href="#job/<%= id %>" class="create-script">create Script</a></strong> right now!
+          </div>
+        <% } %>
         <div class="job-scripts">
           <!-- script template -->
         </div>
@@ -90,7 +96,7 @@
       </ol>
 
       <header class="script-details">
-        <a type="button" class="btn btn-danger run-script" data-script-id="<%= id %>">
+        <a type="button" class="btn btn-success run-script" data-script-id="<%= id %>">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
           <% if (exit_code === 666) { %>
             Run script
@@ -102,6 +108,12 @@
         <a type="button" class="btn btn-warning edit-script" data-script-id="<%= id %>">
           <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
           Edit script
+        </a>
+
+
+        <a type="button" class="btn btn-danger delete-script" data-script-id="<%= id %>">
+          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+          Delete script
         </a>
 
         <div class="progress hidden">

@@ -20,6 +20,12 @@ var app = app || {};
             this.listenTo (app.appSocket, 'command-start:' + this.model.id, this.onCommandStart);
             this.listenTo (app.appSocket, 'command-output:' + this.model.id, this.onCommandOutput);
             this.listenTo (app.appSocket, 'command-end:' + this.model.id, this.onCommandEnd);
+            this.model.on ('change:duration', this.onDurationChange, this);
+            window.cmd = this;
+
+            this.interval_id = -1;
+            this.interval_end = false;
+            this.interval_start = -1;
         },
 
         /**
@@ -42,6 +48,35 @@ var app = app || {};
             return this;
         },
 
+
+        /**
+         * Method starts timer to update duration real-time
+         */
+        startClock: function () {
+            this.interval_id = setInterval (this.updateDurationValue, 100, this);
+            this.interval_start = new Date ().getTime ();
+        },
+
+        /**
+         * Method which stops and removes timer
+         */
+        stopClock: function () {
+            clearInterval (this.interval_id);
+        },
+
+        /**
+         * After each timer tick update duration
+         */
+        updateDurationValue: function (that) {
+            if (that.interval_end) {
+                clearInterval (that.interval_id);
+                return;
+            }
+
+            // update model duration
+            that.model.set ('duration', new Date ().getTime () - that.interval_start);
+        },
+
         /**
          * Method for opening closing commands output
          * @param e
@@ -51,7 +86,16 @@ var app = app || {};
         },
 
         /**
-         * scoket callback method which prepares command gui for run
+         * When model's duration has been changed we will update timer
+         * @param e
+         */
+        onDurationChange: function (e) {
+            this.$ ('.duration-info').visible ();
+            this.$ ('.duration-info').html (this.model.get ('duration').toString ().concat (' ms'));
+        },
+
+        /**
+         * socket callback method which prepares command gui for run
          * @param data socket event data
          */
         onCommandStart: function (data) {
@@ -62,12 +106,12 @@ var app = app || {};
             // clear output
             this.$ ('.command-output').html ('');
 
-
+            this.startClock();
             this.model.set ({start_at: data.start_at});
         },
 
         /**
-         * scoket callback method which completes command gui after execution is over
+         * socket callback method which completes command gui after execution is over
          * @param data socket event data
          */
         onCommandEnd: function (data) {
@@ -83,12 +127,12 @@ var app = app || {};
             if (exit_code != 0)
                 $li.find ('.exit-info').removeClass ('hidden').html ('exit: '.concat (exit_code.toString ()));
 
-
+            this.stopClock();
             this.model.set ({exit_code: data.exit_code, duration: data.duration});
         },
 
         /**
-         * scoket callback method which adds output lines when execution is in progress
+         * socket callback method which adds output lines when execution is in progress
          * @param data socket event data
          */
         onCommandOutput: function (data) {

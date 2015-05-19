@@ -31,6 +31,4 @@ var app = app || {};
 		model: app.Command
 	});
 
-    // global jobs instance
-	app.jobs = new app.JobCollection();
 })();

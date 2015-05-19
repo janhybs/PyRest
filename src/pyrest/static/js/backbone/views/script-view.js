@@ -45,6 +45,7 @@ var app = app || {};
         events: {
             'click .run-script': 'runScript',
             'click .edit-script': 'editScript',
+            'click .delete-script': 'deleteScript',
             'click .save-changes': 'saveChanges'
         },
 
@@ -104,6 +105,22 @@ var app = app || {};
             this.$ ('.script-info').hidden ();
             this.$ ('.script-details').hidden ();
             this.$ ('.script-editable-commands').visible ();
+        },
+
+        /**
+         * Deletes current script
+         * @param ev
+         */
+        deleteScript: function (ev) {
+            console.log ('a je fuč');
+            Backbone.sync('delete', this.model, {
+                success: function (data) {
+                    app.job.fetch ();
+                },
+                error: function () {
+                    console.log ('model NOT removed');
+                }
+            });
         },
 
         /**
@@ -170,8 +187,8 @@ var app = app || {};
         },
 
         /**
-         * Method for rendering one ScriptView
-         * @param script
+         * socket callback method called when this script has been started
+         * @param data socket event data
          */
         onScriptStart: function (data) {
             this.$ ('.progress').removeClass ('hidden');
@@ -179,12 +196,22 @@ var app = app || {};
             this.commandCompleted = 0;
         },
 
+        /**
+         * socket callback method called when this script has ended
+         * @param data socket event data
+         */
         onScriptEnd: function (data) {
             this.$ ('.progress').addClass ('hidden');
             this.model.set ({exit_code: data.exit_code, duration: data.duration, start_at: data.start_at});
         },
 
-
+        /**
+         * socket callback method called when EVERY command ends
+         *
+         * Requires filtering incoming data object to see if data object is meant to this script
+         * Updates progress bar after each event has ended
+         * @param data socket event data
+         */
         onCommandEnd: function (data) {
             // event is not for me
             if (data.script_id != this.model.id) return;

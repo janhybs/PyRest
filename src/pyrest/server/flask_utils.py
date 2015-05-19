@@ -154,7 +154,7 @@ def inject_pretty_date ():
 #
 
 
-def emit_event (event, data, delay=0):
+def emit_event (event, data, delay=0.1):
     """
     Emits socket
     :param event:

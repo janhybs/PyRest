@@ -37,6 +37,14 @@ class Job (persistent.Persistent):
         self.scripts.append (script.id)
 
 
+    def delete_script (self, script):
+        """
+        :param script: script to be removed
+        :return: None
+        """
+        self.scripts.remove (script.id)
+
+
     def get_user (self):
         """
         :return: User object, creator of this job

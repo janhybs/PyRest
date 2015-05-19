@@ -28,6 +28,7 @@ def create_job ():
 
 
 @_jobs_.route ("/list")
+@authenticated_only
 def list_jobs ():
     """
     shows page with all jobs created by current user
@@ -95,6 +96,14 @@ def api_scripts_by_id (script_id):
         db.scripts.add (script)
 
         return { 'insert': 'ok' }
+
+
+    if request.method == "DELETE":
+        if script:
+            job = db.jobs.get(script.job_id)
+            job.delete_script (script)
+            db.scripts.__delitem__(script_id)
+            return { 'delete': 'ok' }
 
     if request.method == 'GET':
         return script.as_dict ()

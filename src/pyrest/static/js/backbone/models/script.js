@@ -29,7 +29,7 @@ var app = app || {};
          */
         initialize: function () {
             this.commands = new app.CommandCollection (this.list ? this.list : [], {parse: true});
-            delete this.list;
+            if (this.list) delete this.list;
         },
 
         /**

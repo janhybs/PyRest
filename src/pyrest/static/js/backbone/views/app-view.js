@@ -97,6 +97,4 @@ var app = app || {};
         }
     });
 
-    // create one main view
-    app.jobView = new app.JobView ({model: app.job})
 }) (jQuery);

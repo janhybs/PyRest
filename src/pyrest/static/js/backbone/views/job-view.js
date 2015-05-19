@@ -43,6 +43,43 @@ var app = app || {};
             this.scriptViews = [];
         },
 
+        // default listeners
+        events: {
+            'click .create-script': 'createScript'
+        },
+
+        /**
+         * Method sends request to server to 'create' new script
+         */
+        createScript: function () {
+            var model = new app.Script ({job_id: this.model.get ('id'), commandsNew: 'echo "Hello world!"'});
+            Backbone.sync ('create', model, {
+                success: function (data) {
+                    //app.job.isLoading = true;
+                    //app.job.isBroken = false;
+                    //app.jobView.render();
+                    //
+                    //app.job.fetch ({
+                    //    success: function () {
+                    //        app.job.isLoading = false;
+                    //        app.job.isBroken = false;
+                    //        app.jobView.render();
+                    //    },
+                    //    error: function () {
+                    //        app.job.isLoading = false;
+                    //        app.job.isBroken = true;
+                    //        app.jobView.render();
+                    //    }
+                    //});
+                    app.job.fetch ();
+                },
+                error: function () {
+                    console.log ('model NOT created');
+                    console.log (arguments)
+                }
+            });
+        },
+
         /**
          * If collection has changed redraw all views
          */

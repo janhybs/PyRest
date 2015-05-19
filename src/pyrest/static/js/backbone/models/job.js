@@ -35,7 +35,8 @@ var app = app || {};
          */
         initialize: function () {
             this.scripts = new app.ScriptCollection (this.list ? this.list : [], {parse: true});
-            delete this.list;
+            if (this.list) delete this.list;
+            return this;
         },
 
         /**
@@ -78,6 +79,4 @@ var app = app || {};
         }
     });
 
-    // global instance of 'main job'
-    app.job = new app.Job ();
 }) ();

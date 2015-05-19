@@ -55,9 +55,4 @@ $ (function () {
         }
 
     });
-
-    // create global router instace
-    app.appRouter = new app.AppRouter();
-
-
 });
