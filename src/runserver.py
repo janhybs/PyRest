@@ -9,24 +9,17 @@ from gevent import monkey
 
 # register roots for non-existing roots
 UserManagementApplication.register (db, 'users', UserManagementApplication)
-
 CommandManagementApplication.register (db, 'commands', CommandManagementApplication)
 ScriptManagementApplication.register (db, 'scripts', ScriptManagementApplication)
-
 JobManagementApplication.register (db, 'jobs', JobManagementApplication)
-
 
 # confirm changes
 transaction.commit ()
 
-#
-# print db.users.search_one ({'username': 'Hans', 'password': 'foo'})
-# print db.users.search_one ({})
-
-
-
+# set debug Flag if set
 app.debug = Configuration.get_instance ().debug
 
+# check arguments and run server is desired
 if not Configuration.get_instance ().noserver:
     # run server
     monkey.patch_all(thread=False)
