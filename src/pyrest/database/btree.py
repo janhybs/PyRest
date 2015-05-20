@@ -4,12 +4,27 @@
 import uuid
 import BTrees.OOBTree
 from operator import itemgetter
+from pyrest.rest.api_exception import ApiException
 
 
 class BTreeEx (BTrees.OOBTree.BTree):
     """
     Extended class of btree with searching and sorting
     """
+
+    def require (self, item_id, detail='Not found', status=404):
+        """
+        Method will load item by given id or raise ApiException with given details
+        :param item_id: item id
+        :param detail: exception detail
+        :param status: exception status
+        :return:
+        """
+        item = self.get (item_id, None)
+        if item is None:
+            raise ApiException (detail, status)
+        return item
+
     def add (self, value):
         """
         adds item to this btree root whilst using value.id as id
@@ -17,6 +32,21 @@ class BTreeEx (BTrees.OOBTree.BTree):
         :return: bool
         """
         return self.insert (value.id, value)
+
+    def delete (self, value):
+        """
+        Removes given object by its if value or if str is given, remove
+        object with this value
+        :param value:
+        :return:
+        """
+        if type (value) in (str, unicode):
+            del self[value]
+        else:
+            del self[value.id]
+
+    remove = delete
+
 
     def search (self, conditions={ }, sort=None):
         """

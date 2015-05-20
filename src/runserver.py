@@ -24,3 +24,11 @@ if not Configuration.get_instance ().noserver:
     # run server
     monkey.patch_all(thread=False)
     socket.run (app, host='0.0.0.0', port=5000)
+
+
+# print len(db.jobs.search ())
+# print db.jobs.search_one().id
+#
+# del db.jobs['py1']
+# transaction.commit ()
+# print len(db.jobs.search ())

@@ -102,7 +102,7 @@ def api_scripts_by_id (script_id):
         if script:
             job = db.jobs.get(script.job_id)
             job.delete_script (script)
-            db.scripts.__delitem__(script_id)
+            db.scripts.delete (script)
             return { 'delete': 'ok' }
 
     if request.method == 'GET':
