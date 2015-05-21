@@ -40,6 +40,8 @@ from pyrest.views import index_view, user_view, jobs_view
 from pyrest.sockets import run_code
 from pyrest.rest.jobs_api import JobsApi
 from pyrest.rest.scripts_api import ScriptsApi
+from pyrest.server import  flask_utils
+
 
 # register blueprints
 app.register_blueprint (_user_, url_prefix='/user')
