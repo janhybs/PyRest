@@ -19,7 +19,7 @@ var app = app || {};
 
         defaults: {
             id: '',
-            exit_code: null,
+            exit_code: 666,
             start_at: 0,
             duration: null
         },

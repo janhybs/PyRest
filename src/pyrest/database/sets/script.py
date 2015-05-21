@@ -30,6 +30,7 @@ class Script (persistent.Persistent):
     """
     class representing list fo commands
     """
+
     def __init__ (self):
         self.id = None
         self.job_id = None
@@ -43,16 +44,15 @@ class Script (persistent.Persistent):
         """
         :return: shallow copy
         """
-        script = Script()
+        script = Script ()
         script.job_id = self.job_id
         script.start_at = self.start_at
         script.duration = self.duration
         script.exit_code = self.exit_code
         script.commands = self.commands
-        script.id = DBUtils.unique_id()
+        script.id = DBUtils.unique_id ()
 
         return script
-
 
 
     def get_commands (self):
@@ -91,7 +91,7 @@ class Script (persistent.Persistent):
         """
         return dict (
             id=self.id, job_id=self.job_id,
-            start_at=int(self.start_at) if self.start_at else None, exit_code=self.exit_code,
+            start_at=int (self.start_at) if self.start_at else None, exit_code=self.exit_code,
             duration=self.duration,
             commands=[command.as_dict () for command in self.commands]
         )
@@ -111,7 +111,10 @@ class ScriptManagementApplication (BTreeEx):
         script.exit_code = kwargs.get ('exit_code', ScriptExitCode.unknown)
         script.duration = kwargs.get ('duration')
 
-        commands = kwargs.get ('commands', '').splitlines ()
+        if kwargs.get ('commandsNew', ''):
+            commands = kwargs.get ('commandsNew', '').splitlines ()
+        else:
+            commands = kwargs.get ('commands', [])
         script.commands = CommandManagementApplication.create_command_list (script_id=script.id, commands=commands)
         return script
 

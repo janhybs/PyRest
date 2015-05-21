@@ -31,13 +31,19 @@ var app = app || {};
          */
         initialize: function () {
 
-            var that = this;
             this.$list = $ ('#job-list');
 //
             this.listenTo (app.jobs, 'add', this.addOne);
             this.listenTo (app.jobs, 'reset', this.addAll);
+            this.listenTo (app.jobs, 'remove', this.addAll);
+            this.listenTo (app.job, 'change', this.refreshList);
             this.listenTo (app.appRouter, 'jobIdChange', this.onJobIdChange);
 
+            this.refreshList ();
+        },
+
+        refreshList: function () {
+            var that = this;
             app.jobs.fetch ({
                 reset: true,
                 success: function () {

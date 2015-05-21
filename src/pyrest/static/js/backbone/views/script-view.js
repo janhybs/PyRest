@@ -46,7 +46,8 @@ var app = app || {};
             'click .run-script': 'runScript',
             'click .edit-script': 'editScript',
             'click .delete-script': 'deleteScript',
-            'click .save-changes': 'saveChanges'
+            'click .save-changes': 'saveChanges',
+            'click .abort-changes': 'abortChanges'
         },
 
 
@@ -108,12 +109,22 @@ var app = app || {};
         },
 
         /**
+         * Method called when editing is was aborted
+         * @param ev
+         */
+        abortChanges: function (ev) {
+            this.$ ('.script-commands').visible ();
+            this.$ ('.script-info').visible ();
+            this.$ ('.script-details').visible ();
+            this.$ ('.script-editable-commands').hidden ();
+        },
+
+        /**
          * Deletes current script
          * @param ev
          */
         deleteScript: function (ev) {
-            console.log ('a je fuč');
-            Backbone.sync('delete', this.model, {
+            Backbone.sync ('delete', this.model, {
                 success: function (data) {
                     app.job.fetch ();
                 },
@@ -169,7 +180,7 @@ var app = app || {};
                         //        app.jobView.render();
                         //    }
                         //});
-                        app.job.fetch()
+                        app.job.fetch ();
                     },
                     error: function () {
                         console.log ('model NOT created');
