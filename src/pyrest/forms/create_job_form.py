@@ -33,7 +33,7 @@ class JobForm (Form):
 
         # create job instance and default script instance
         job = JobManagementApplication.create (user_id=current_user.user.id, name=self.name.data)
-        script = ScriptManagementApplication.create (job_id=job.id, commands=self.script.data)
+        script = ScriptManagementApplication.create (job_id=job.id, commandsNew=self.script.data)
 
         # add default instance id to jobs scripts list
         job.add_script (script)
