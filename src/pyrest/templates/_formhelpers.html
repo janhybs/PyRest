@@ -14,9 +14,11 @@
 
 {% macro h1 (title) %}
   <h1>
-  <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
-    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-  </a>
+    {% if not request.path == url_for('main') %}
+      <a href="{{ url_for('main') }}" title="go back" class="btn btn-default btn-lg">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      </a>
+    {% endif %}
   {{ title|safe }}
   </h1>
 {% endmacro %}

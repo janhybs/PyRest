@@ -1,5 +1,7 @@
 # encoding: utf-8
 # author:   Jan Hybs
+import codecs
+import sys, os
 
 from pyrest import app
 from flask import redirect, render_template, g
@@ -12,4 +14,8 @@ def main ():
     """
     Main view which shows almost nothing
     """
-    return render_template ('main.html')
+    import markdown
+    input_file = codecs.open("../README.md", mode="r", encoding="utf-8")
+    text = input_file.read()
+    html = markdown.markdown(text)
+    return render_template ('main.html', content=html)

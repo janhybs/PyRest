@@ -7,7 +7,7 @@
 
 
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4" id="job-list-wrapper">
       <ul class="job-list" id="job-list">
         <li class="alert alert-info job-loading" role="alert">Loading job list</li>
       </ul>
@@ -34,7 +34,7 @@
     <a href="{{ url_for ('jobs.list_jobs') }}#job/<%= id %>" data-job-id="<%= id %>"
        class="job-link panel panel-default list-group-item list-group-item-default">
       <div class="panel-body">
-        <h3><small>{'{ .username|e }} / </small> <%= name %></h3>
+        <h3><small><small>{{ current_user.user.username|e }} / </small></small> <%= name %></h3>
         <p class="pull-right">#<%= scripts_id.length %></p>
       </div>
     </a>
@@ -43,14 +43,18 @@
   <script type="text/template" id="job-template">
     <div class="job-content panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">
-          <%= name %>
-          <small> <%= id %></small>
+        <h3 class="panel-title job-title">
+          <% if (id && id.toString().trim().length) { %>
+            <%= name %>
+            <small> <%= id %></small>
+            <a class="btn btn-link pull-right delete-job" >remove</a>
+          <% } %>
         </h3>
+        <input type="text" name="job-title" value="<%= name %>" class="job-title-edit hidden" />
       </div>
       <div class="panel-body">
         <% if (scripts.length == 0) { %>
-          <div class="alert alert-danger">
+          <div class="alert alert-warning">
             So far, no script were created for this <strong>Job</strong> (or perhaps all of them was removed).
             But you can simple <strong><a href="#job/<%= id %>" class="create-script">create Script</a></strong> right now!
           </div>
@@ -96,25 +100,27 @@
       </ol>
 
       <header class="script-details">
-        <a type="button" class="btn btn-success run-script" data-script-id="<%= id %>">
-          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-          <% if (exit_code === 666) { %>
-            Run script
-          <% } else { %>
-            Rerun script
-          <% } %>
-        </a>
+        <div class="btn-group" role="group" aria-label="...">
+          <a type="button" class="btn btn-success run-script" data-script-id="<%= id %>">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            <% if (exit_code === 666) { %>
+              Run script
+            <% } else { %>
+              Rerun script
+            <% } %>
+          </a>
 
-        <a type="button" class="btn btn-warning edit-script" data-script-id="<%= id %>">
-          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-          Edit script
-        </a>
+          <a type="button" class="btn btn-warning edit-script" data-script-id="<%= id %>">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            Edit script
+          </a>
 
 
-        <a type="button" class="btn btn-danger delete-script" data-script-id="<%= id %>">
-          <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-          Delete script
-        </a>
+          <a type="button" class="btn btn-danger delete-script" data-script-id="<%= id %>">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            Delete script
+          </a>
+        </div>
 
         <div class="progress hidden">
           <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
@@ -126,10 +132,16 @@
       <div class="script-editable-commands hidden">
         <textarea class="form-control" rows="<%= commands.length %>"><%= commandsRaw %></textarea>
 
-        <a type="button" class="btn btn-success save-changes">
-          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-          Save changes
-        </a>
+        <div class="btn-group" role="group" aria-label="...">
+          <a type="button" class="btn btn-success save-changes">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+            Save changes
+          </a>
+          <a type="button" class="btn btn-warning abort-changes">
+            <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+            Abort changes
+          </a>
+        </div>
 
       </div>
     </article>
