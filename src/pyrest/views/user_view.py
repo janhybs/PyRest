@@ -20,6 +20,7 @@ def sign_in (redirect_url):
     if form.validate_on_submit ():
         flash (u'Successfully logged in as %s' % form.username.data, category='success')
         return redirect (url_for (redirect_url))
+
     return render_template ('sign_in_form.html', form=form)
 
 
@@ -32,7 +33,7 @@ def sign_up ():
     form = SignUpForm ()
     if form.validate_on_submit ():
         flash (u'Successfully registered as %s' % form.username.data, category='success')
-        return redirect (url_for ('main'))
+        return redirect (url_for ('user.sign_in'))
     return render_template ('sign_up_form.html', form=form)
 
 
