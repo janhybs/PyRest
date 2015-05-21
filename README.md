@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/x3mSpeedy/PyRest.svg?branch=master)](https://travis-ci.org/x3mSpeedy/PyRest)
 
-Technology used on server:
+##Technology used on server:
+
  - [Flask](flask.pocoo.org/)
  - [Flask SocketIO](https://flask-socketio.readthedocs.org/en/latest/)
  - [Flask Login](https://flask-login.readthedocs.org/en/latest/)
@@ -12,10 +13,10 @@ Technology used on server:
  - [WTF forms](https://wtforms.readthedocs.org/en/latest/)
 
 
-Technology used on client:
+##Technology used on client:
+
  - [Backbone.js](http://backbonejs.org/)
  - [SocketIO](http://socket.io/download/)
  - [jQuery](https://jquery.com/)
  - [Underscore](http://underscorejs.org/)
  - [Bootstrap](http://getbootstrap.com/)
- 
