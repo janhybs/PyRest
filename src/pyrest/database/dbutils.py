@@ -24,5 +24,5 @@ class DBUtils (object):
         :param kwargs:
         :return: extract id from given kwargs
         """
-        kwargs_id = kwargs.get ('id', None)
-        return unicode (kwargs_id if kwargs_id is not None else DBUtils.unique_id ())
+        kwargs_id = kwargs.get ('id')
+        return unicode (kwargs_id if kwargs_id else DBUtils.unique_id ())
