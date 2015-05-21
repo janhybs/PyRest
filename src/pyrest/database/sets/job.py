@@ -114,13 +114,16 @@ class Job (persistent.Persistent):
         return d
 
 
+    remove_script = delete_script
+
+
 class JobManagementApplication (BTreeEx):
     def add_default (self):
         """
         Add default values
         """
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 1")
-        script = ScriptManagementApplication.create (job_id=job.id,commands=
+        script = ScriptManagementApplication.create (job_id=job.id,commandsNew=
             """
 java -versioncas
 java -version 2>&1
@@ -132,7 +135,7 @@ java -version
         self.add (job)
 
         job = JobManagementApplication.create (user_id=db.users.search_one ().id, name="Job 2")
-        script = ScriptManagementApplication.create (job_id=job.id, commands=
+        script = ScriptManagementApplication.create (job_id=job.id, commandsNew=
         """ping -c 4 www.tul.cz
         echo 'uname'
         uname -a
@@ -143,7 +146,7 @@ java -version
         job.add_script (script)
         db.scripts.add (script)
 
-        script = ScriptManagementApplication.create (job_id=job.id, commands=
+        script = ScriptManagementApplication.create (job_id=job.id, commandsNew=
         """echo 'uname'
         uname
         uname -a
