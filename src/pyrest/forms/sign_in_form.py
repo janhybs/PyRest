@@ -6,6 +6,7 @@ from wtforms.fields.core import StringField
 from wtforms.fields.simple import PasswordField
 from wtforms.validators import DataRequired
 from pyrest import db, auth
+from pyrest.database.crypto import password_hash
 
 
 class SignInForm (Form):
@@ -20,11 +21,15 @@ class SignInForm (Form):
         if not result:
             return result
 
-        user = db.users.search_one ({ 'username': self.username.data, 'password': self.password.data })
+        user = db.users.search_one ({
+            'username': self.username.data,
+            'password': password_hash (self.password.data)
+        })
+
         if user is not None:
             auth.login_user (user.create_session_user ())
         else:
-            self.password.errors.append('Wrong password or username')
+            self.password.errors.append ('Wrong password or username')
             return False
 
         return True

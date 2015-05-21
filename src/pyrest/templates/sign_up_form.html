@@ -29,6 +29,15 @@
             {{ form.email.label(class='sr-only') }}
             {{ form.email(class='form-control', placeholder='your@email') }}
 
+            {% if form.errors %}
+                <div class="list-group">
+                {% for (error_group, error_list) in form.errors.iteritems() %}
+                    {% for error in error_list %}
+                        <div class="list-group-item list-group-item-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+                </div>
+            {% endif %}
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
     </div>

@@ -7,6 +7,7 @@ from persistent.list import PersistentList
 
 from pyrest import db
 from pyrest.database.btree import BTreeEx
+from pyrest.database.crypto import password_hash
 from pyrest.database.dbutils import DBUtils
 from pyrest.server.auth import SessionUser
 
@@ -60,13 +61,13 @@ class UserManagementApplication (BTreeEx):
         u = User ()
         u.id = str (uuid.uuid1 ())
         u.username = 'Hans'
-        u.password = 'foo'
+        u.password = password_hash ('foo')
         self.add (u)
 
         u = User ()
         u.id = str (uuid.uuid1 ())
         u.username = 'root'
-        u.password = 'root'
+        u.password = password_hash ('root')
         self.add (u)
 
     @staticmethod

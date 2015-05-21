@@ -23,9 +23,15 @@
             {{ form.password.label(class='sr-only') }}
             {{ form.password(class='form-control', placeholder='password') }}
 
-            <!--<div class="checkbox">-->
-            <!--<label><input type="checkbox" value="remember-me"> Remember me</label>-->
-            <!--</div>-->
+            {% if form.errors %}
+                <div class="list-group">
+                {% for (error_group, error_list) in form.errors.iteritems() %}
+                    {% for error in error_list %}
+                        <div class="list-group-item list-group-item-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endfor %}
+                </div>
+            {% endif %}
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
         </form>
     </div>

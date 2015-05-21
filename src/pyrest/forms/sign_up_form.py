@@ -9,6 +9,7 @@ from wtforms.fields.simple import PasswordField
 from wtforms.validators import DataRequired, EqualTo, Email
 
 from pyrest import db
+from pyrest.database.crypto import password_hash
 from pyrest.database.sets.user import User, UserManagementApplication
 
 
@@ -36,7 +37,7 @@ class SignUpForm (Form):
 
         user = UserManagementApplication.create()
         user.username = self.username.data
-        user.password = self.password.data
+        user.password = password_hash (self.password.data)
 
         db.users.add (user)
         transaction.commit ()
