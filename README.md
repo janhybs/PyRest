@@ -2,6 +2,15 @@
 
 [![Build Status](https://travis-ci.org/x3mSpeedy/PyRest.svg?branch=master)](https://travis-ci.org/x3mSpeedy/PyRest)
 
+##How to install and run app:
+```bash
+git clone https://github.com/x3mSpeedy/PyRest.git
+cd PyRest/src
+python runserver.py
+```
+-  open local server on ```http://localhost:5000```
+-  login using ```root``` username with password ```root```
+
 ##Technology used on server:
 
  - [Flask](flask.pocoo.org/)
