@@ -5,7 +5,9 @@
 ##How to install and run app:
 ```bash
 git clone https://github.com/x3mSpeedy/PyRest.git
-cd PyRest/src
+cd PyRest
+pip install -r requirements.txt
+cd src
 python runserver.py
 ```
 -  open local server on ```http://localhost:5000```
